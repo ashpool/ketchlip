@@ -20,3 +20,6 @@ logger.addHandler(ch)
 
 def info(msg, *args, **kvargs):
     logger.info(msg, *args, **kvargs)
+
+def error(msg, *args, **kvargs):
+    logger.error(msg, *args, **kvargs)
