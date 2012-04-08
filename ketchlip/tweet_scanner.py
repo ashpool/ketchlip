@@ -5,6 +5,7 @@ import re
 import sys
 import tweepy
 import codecs
+from ketchlip import klogger
 
 
 class CustomStreamListener(tweepy.StreamListener):
@@ -20,7 +21,7 @@ class CustomStreamListener(tweepy.StreamListener):
         result = expression.findall(text)
         if result:
             for link in result:
-                print "link", link[0], "text", text
+                klogger.info("LINK: " +  link[0] + " TEXT: " + text)
                 links.append(link[0])
         return links
 
@@ -29,7 +30,7 @@ class CustomStreamListener(tweepy.StreamListener):
         try:
 
             if status.text.find("RT") >= 0:
-                print "PASS", status.text
+                klogger.info("PASS: " + status.text)
                 return
 
             links = self.get_all_links(status.text)
