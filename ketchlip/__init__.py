@@ -1,4 +1,4 @@
-# Twearch
+# KETCHLIP
 # Copyright 2012 Magnus ljadas
 # See LICENSE for details.
 
