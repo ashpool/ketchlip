@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import string,cgi,time
-from os import curdir, sep
+import cgi
+import time
+import klogger
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from dynamic_content_loader import DynamicContentLoader
 from querystring import Querystring
 from search_singleton import SearchSingleton
 
+
 class MyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            print "GET"
-            print "path", self.path
+            klogger.info("GET " + self.path)
+
             qs = Querystring(self.path)
             page = qs.page()
             if page:
@@ -27,9 +29,18 @@ class MyHandler(BaseHTTPRequestHandler):
                 for i in range(len(query)):
                     query[i] = query[i].lower()
 
-                print "QUERY", query
+                klogger.info("QUERY " + str(query))
+
+                x = time.time()
                 results = SearchSingleton().query(query)
-                print "Search result", results
+                search_time = time.time() - x
+
+                self.wfile.write('<p>')
+                self.wfile.write(str("About " + str(len(results))) + " results ( %0.3f ms" % (search_time*1000.0) + ")")
+                self.wfile.write('</p>')
+
+                klogger.info("Search result " + str(results))
+
                 for url in results:
                     self.wfile.write('<p/>')
                     self.wfile.write('<a href="')
@@ -49,31 +60,29 @@ class MyHandler(BaseHTTPRequestHandler):
         global rootnode
 
         try:
-            print "POST"
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             if ctype == 'multipart/form-data':
                 query=cgi.parse_multipart(self.rfile, pdict)
             self.send_response(301)
-
             self.end_headers()
             upfilecontent = query.get('upfile')
-            print "filecontent", upfilecontent[0]
             self.wfile.write("<HTML>POST OK.<BR><BR>");
             self.wfile.write(upfilecontent[0]);
         except :
             pass
 
 def main():
+    PORT = 80
     try:
-        print "Loading index ..."
-        preload = SearchSingleton()
-        print "Loading done"
-        server = HTTPServer(('', 80), MyHandler)
-        print 'started httpserver...'
+        klogger.info("Warming up...")
+        SearchSingleton()
+        server = HTTPServer(('', PORT), MyHandler)
+        klogger.info("HTTP server ready to serve on port " + str(PORT))
         server.serve_forever()
     except KeyboardInterrupt:
-        print '^C received, shutting down server'
-        server.socket.close()
+        klogger.info('^C received, shutting down server')
+        if server:
+            server.socket.close()
 
 if __name__ == '__main__':
     main()
