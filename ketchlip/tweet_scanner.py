@@ -25,10 +25,9 @@ class CustomStreamListener(tweepy.StreamListener):
                 links.append(link[0])
         return links
 
-
     def on_status(self, status):
+        BATCH_SIZE = 25
         try:
-
             if status.text.find("RT") >= 0:
                 klogger.info("PASS: " + status.text)
                 return
@@ -38,39 +37,30 @@ class CustomStreamListener(tweepy.StreamListener):
                 for link in links:
                     self.tweets.append(link)
 
-                if len(self.tweets) > 25:
-                    print "printing..."
+                if len(self.tweets) > BATCH_SIZE:
+                    klogger.info("Writing tweets to file")
                     f = codecs.open('/tmp/tweets.txt', 'a', 'utf-8')
                     for tweet in self.tweets:
                         f.write(tweet + '\n')
                     f.close()
                     self.tweets = []
-                    print "printing done"
-            print "m"
-            #print "%s\t%s\t%s\t%s" % (status.text,
-            #                          status.author.screen_name,
-            #                          status.created_at,
-            #                          status.source,)
 
-        except Exception, e:
-            print >> sys.stderr, 'Encountered Exception:', e
+        except Exception as e:
+            klogger.error('Encountered Exception: ' + str(e))
             pass
 
     def on_error(self, status_code):
-        print >> sys.stderr, 'Encountered error with status code:', status_code
+        klogger.error('Encountered error with status code:' +  str(status_code))
         return True # Don't kill the stream
 
     def on_timeout(self):
-        print >> sys.stderr, 'Timeout...'
+        klogger.error('Timeout...')
         return True # Don't kill the stream
 
-
-
-# The access tokens can be found on your applications's Details
-# page located at https://dev.twitter.com/apps (located
-# under "Your access token")
-
+#noinspection PyBroadException,PyBroadException,PyBroadException
 def main():
+    global streaming_api
+    #noinspection PyBroadException,PyBroadException,PyBroadException,PyBroadException
     try:
         cfg = ConfigParser.ConfigParser()
 
@@ -80,33 +70,27 @@ def main():
         ACCESS_TOKEN=cfg.get('Twitter', 'ACCESS_TOKEN')
         ACCESS_TOKEN_SECRET=cfg.get('Twitter', 'ACCESS_TOKEN_SECRET')
 
-
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
         api = tweepy.API(auth)
 
-        # If the authentication was successful, you should
-        # see the name of the account print out
-        print >> sys.stderr, api.me().name
-
         friends_ids = []
         for friend in tweepy.Cursor(api.friends).items():
             friends_ids.append(friend.id)
-        print >> sys.stderr,  len(friends_ids), "friends"
-        # Create a streaming API and set a timeout value of 60 seconds.
+
+        klogger.info(str("Scanning " + api.me().name + " " + str(len(friends_ids))) + " friends")
+
         csl = CustomStreamListener()
         streaming_api = tweepy.streaming.Stream(auth, csl, timeout=60)
-
-        # Optionally filter the statuses you want to track by providing a list
-        # of users to "follow".
-
-        print >> sys.stderr, 'Filtering the public timeline for "%s"' % (' '.join(sys.argv[1:]),)
         streaming_api.filter(follow=friends_ids)
 
     except KeyboardInterrupt:
-        print >> sys.stderr, '^C received, shutting down scanner'
-        streaming_api.disconnect()
+        klogger.info('^C received, shutting down tweet scanner')
+        if streaming_api:
+            streaming_api.disconnect()
+    except:
+        klogger.error("Unexpected error: " + str(sys.exc_info()[0]))
 
 if __name__ == '__main__':
     main()
