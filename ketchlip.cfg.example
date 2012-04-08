@@ -1,0 +1,9 @@
+[Twitter]
+# The access tokens can be found on your applications's Details
+# page located at https://dev.twitter.com/apps (located
+# under "Your access token")
+
+CONSUMER_KEY: 
+CONSUMER_SECRET: 
+ACCESS_TOKEN: 
+ACCESS_TOKEN_SECRET:
