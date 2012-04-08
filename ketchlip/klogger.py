@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger('ketchlip')
 logger.setLevel(logging.DEBUG)
 
-fh = logging.FileHandler('ketchlip.log')
+fh = logging.FileHandler('../ketchlip.log')
 fh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
