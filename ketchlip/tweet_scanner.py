@@ -21,15 +21,15 @@ class CustomStreamListener(tweepy.StreamListener):
         result = expression.findall(text)
         if result:
             for link in result:
-                klogger.info("LINK: " +  link[0] + " TEXT: " + text)
+                klogger.info("FETCH: " + text)
                 links.append(link[0])
         return links
 
     def on_status(self, status):
-        BATCH_SIZE = 25
+        BATCH_SIZE = 10
         try:
             if status.text.find("RT") >= 0:
-                klogger.info("PASS: " + status.text)
+                # we're not interested in redundant RT spam
                 return
 
             links = self.get_all_links(status.text)
@@ -57,10 +57,10 @@ class CustomStreamListener(tweepy.StreamListener):
         klogger.error('Timeout...')
         return True # Don't kill the stream
 
-#noinspection PyBroadException,PyBroadException,PyBroadException
+
 def main():
     global streaming_api
-    #noinspection PyBroadException,PyBroadException,PyBroadException,PyBroadException
+
     try:
         cfg = ConfigParser.ConfigParser()
 

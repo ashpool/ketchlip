@@ -5,8 +5,7 @@ import re
 from unicodedata import normalize
 
 def remove_html_tags(word):
-    #pattern = re.compile(r'<(p|P)([\s].*)?>')
-    pattern = re.compile(r'<\/?\w.*>')
+    pattern = re.compile(r'</?\w.*>')
     return re.sub(pattern, "", word)
 
 class Word:
