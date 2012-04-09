@@ -6,7 +6,7 @@ Ketchlip then crawl and index links found and makes them searchable through a si
 
 ## Dependencies
 
-Ketchlip needs these libraries to be installed:
+Ketchlip needs these libraries to run:
 > pip install 'library name'
 
 * tweepy
