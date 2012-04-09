@@ -8,7 +8,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from dynamic_content_loader import DynamicContentLoader
 from querystring import Querystring
 from search_singleton import SearchSingleton
-
+from jinja2 import Template
 
 class MyHandler(BaseHTTPRequestHandler):
 
@@ -23,8 +23,6 @@ class MyHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type',	'text/html')
                 self.end_headers()
 
-                content = DynamicContentLoader().load(page)
-                self.wfile.write(content)
                 query = qs.get_values("search")
                 for i in range(len(query)):
                     query[i] = query[i].lower()
@@ -33,26 +31,15 @@ class MyHandler(BaseHTTPRequestHandler):
 
                 x = time.time()
                 results = SearchSingleton().query(query)
-                search_time = time.time() - x
+                search_time_ms = (time.time() - x) * 1000.0
 
-                self.wfile.write('<p>')
-                self.wfile.write(str("About " + str(len(results))) + " results ( %0.3f ms" % (search_time*1000.0) + ")")
-                self.wfile.write('</p>')
+                template = Template(DynamicContentLoader().load(page))
+                content = template.render(query=" ".join(query), results=results, search_time_in_ms=search_time_ms)
 
-                klogger.info("Search result " + str(results))
-
-                for url in results:
-                    self.wfile.write('<p/>')
-                    self.wfile.write('<a href="')
-                    self.wfile.write(url)
-                    self.wfile.write('" >')
-                    self.wfile.write(url)
-                    self.wfile.write('</a>')
-                return
-
+                self.wfile.write(content)
             return
 
-        except IOError, e:
+        except IOError:
             self.send_error(404,'File Not Found: %s' % self.path)
 
 
@@ -66,16 +53,16 @@ class MyHandler(BaseHTTPRequestHandler):
             self.send_response(301)
             self.end_headers()
             upfilecontent = query.get('upfile')
-            self.wfile.write("<HTML>POST OK.<BR><BR>");
-            self.wfile.write(upfilecontent[0]);
-        except :
+            self.wfile.write("<HTML>POST OK.<BR><BR>")
+            self.wfile.write(upfilecontent[0])
+        except:
             pass
 
 def main():
     PORT = 80
     try:
         klogger.info("Warming up...")
-        SearchSingleton()
+        SearchSingleton().load_index("/tmp/index")
         server = HTTPServer(('', PORT), MyHandler)
         klogger.info("HTTP server ready to serve on port " + str(PORT))
         server.serve_forever()

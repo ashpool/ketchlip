@@ -13,5 +13,6 @@ Ketchlip needs these libraries to be installed:
 * nose
 * BeautifulSoup
 * pickle
+* jinja2
 
 
