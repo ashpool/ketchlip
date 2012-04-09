@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from word import Word
 
 class Query:
 
@@ -16,7 +15,7 @@ class Query:
         # ['http://d.com', [10]],
         # ['http://b.com', [11, 22, 42]]]
         def quicksort(url_list):
-            if (len(url_list) == 0):
+            if not len(url_list):
                 return url_list
             # ['http://b.com', [11, 22, 42]
             print url_list[0][1]
