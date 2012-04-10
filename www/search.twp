@@ -1,10 +1,11 @@
+<div>
 <form autocomplete="off">
     <input type="text" name="search" value="{{query}}"/>
     <input type="submit" value="Search" />
 </form>
+</div>
+<div>{{'%.2f' % search_time_in_ms}} ms</div>
 
-<ul>
 {% for result in results %}
-        <li><a href="{{ result }}">{{ result }}</a></li>
+    <div><a href="{{ result }}">{{ result }}</a></div>
 {% endfor %}
-</ul>
