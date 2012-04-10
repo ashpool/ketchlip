@@ -1,6 +1,6 @@
-from ketchlip.search_singleton import SearchSingleton
+#-*- coding: utf-8 -*-
 
-__author__ = 'magnus'
+from ketchlip.search_singleton import SearchSingleton
 
 import unittest
 

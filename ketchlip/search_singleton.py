@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#-*- coding: utf-8 -*-
 
 # http://stackoverflow.com/questions/42558/python-and-the-singleton-pattern
 import klogger

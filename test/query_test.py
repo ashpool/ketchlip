@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 from ketchlip.query import Query
 
 import unittest

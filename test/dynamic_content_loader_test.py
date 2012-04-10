@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#-*- coding: utf-8 -*-
 
 import unittest
 from ketchlip.dynamic_content_loader import DynamicContentLoader
