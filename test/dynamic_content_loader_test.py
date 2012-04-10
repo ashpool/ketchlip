@@ -11,9 +11,8 @@ class DynamicContentLoaderTest(unittest.TestCase):
         self.hello_world_content = "<p>Hello World!</p>"
 
     def test_load(self):
-        content = self.loader.load("hello_world.twp")
+        content = self.loader.load("hello_world.twp", "./www/")
         self.assertEqual(self.hello_world_content, content)
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -10,11 +10,8 @@ def remove_html_tags(word):
 
 class Word:
 
-
     def __init__(self, word):
         self.word = word
-
-
 
     def slugify(self, delim=u' '):
         _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+')

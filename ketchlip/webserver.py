@@ -62,7 +62,7 @@ def main():
     PORT = 80
     try:
         klogger.info("Warming up...")
-        SearchSingleton().load_index("/tmp/index")
+        SearchSingleton().load("/tmp/index", "/tmp/url_lookup")
         server = HTTPServer(('', PORT), MyHandler)
         klogger.info("HTTP server ready to serve on port " + str(PORT))
         server.serve_forever()

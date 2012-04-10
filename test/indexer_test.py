@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
+# todo cleanup encoding with # -*- coding: utf-8 -*-
 import unittest
 from ketchlip.indexer import Indexer
 

@@ -13,7 +13,7 @@ from word import Word
 class Indexer:
 
     def crawl(self, links_file): # returns index, graph of inlinks
-        crawled = []
+        crawled = {}
         graph = {}  # <url>, [list of pages it links to]
         index = {}
         file = open(links_file, "r")
@@ -22,16 +22,20 @@ class Indexer:
                 content = self.get_page(page)
                 if not content:
                     continue
-                self.add_page_to_index(index, page, content)
+                crawled[page] = len(crawled.items())
+                self.add_page_to_index(index, crawled[page], content)
                 out_links = self.get_all_links(content)
                 if out_links:
                     graph[page] = out_links
-                crawled.append(page)
             else:
                 print "already crawled %s", page
         file.close()
 
-        return index, graph
+        url_lookup = {}
+        for k, v in crawled.items():
+            url_lookup[v] = k
+
+        return index, graph, url_lookup
 
     def get_page(self,  url):
         print "opening", url
@@ -95,12 +99,13 @@ class Indexer:
         else:
             index[keyword] = [[pos, url]]
 
-
+# todo replace print with klogger
 def main():
     try:
-        index, graph = Indexer().crawl("/tmp/tweets.txt")
+        index, graph, url_lookup = Indexer().crawl("/tmp/tweets.txt")
         Persister("/tmp/index").save(index)
         Persister("/tmp/graph").save(graph)
+        Persister("/tmp/url_lookup").save(url_lookup)
     except KeyboardInterrupt:
         print '^C received, shutting down indexer'
 

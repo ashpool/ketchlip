@@ -3,13 +3,11 @@
 
 class Query:
 
-    def __init__(self, index):
+    def __init__(self, index, url_lookup):
         self.index =  index
-
-
+        self.url_lookup = url_lookup
 
     def multi_lookup(self, query):
-
         #[['http://c.com', [10]],
         # ['http://a.com', [200]],
         # ['http://d.com', [10]],
@@ -18,11 +16,9 @@ class Query:
             if not len(url_list):
                 return url_list
             # ['http://b.com', [11, 22, 42]
-            print url_list[0][1]
             front = quicksort([le for le in url_list[1:] if max(le[1]) - min(le[1])  <= max(url_list[0][1]) - max(url_list[0][1])])
             back = quicksort([gt for gt in url_list[1:] if max(gt[1]) - min(gt[1]) > max(url_list[0][1]) - min(url_list[0][1])])
             return back + [url_list[0]] + front
-
 
         WORDPOS = 0
         URL = 1
@@ -59,5 +55,6 @@ class Query:
         # ['http://d.com', [10]],
         # ['http://b.com', [11, 22, 42]]]
         sorted_url_list = quicksort(url_list)
+        # todo test if the sort order should be reversed
 
-        return [li[0] for li in sorted_url_list]
+        return [self.url_lookup[li[0]] for li in sorted_url_list]
