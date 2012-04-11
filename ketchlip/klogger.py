@@ -25,3 +25,6 @@ def info(msg, *args, **kvargs):
 
 def error(msg, *args, **kvargs):
     logger.error(msg, *args, **kvargs)
+
+def exception(msg, *args):
+    logger.exception(msg, *args)
