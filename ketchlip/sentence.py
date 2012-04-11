@@ -7,6 +7,7 @@ class Sentence:
     def __init__(self, sentence):
         self.sentence = sentence
 
+    # todo fix this method
     def sanitize(self):
         ret = []
         s = str(self.sentence)
