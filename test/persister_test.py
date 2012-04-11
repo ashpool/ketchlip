@@ -24,6 +24,10 @@ class PersisterTest(unittest.TestCase):
         d = {'key': "value"}
         self.assertEqual(d, self.save_load(d))
 
+    def test_attempt_to_load_nonexisting_file_should_return_none(self):
+        persister = Persister("/tmp/this_file_does_not_exist")
+        self.assertIsNone(persister.load())
+
 
 if __name__ == '__main__':
     unittest.main()

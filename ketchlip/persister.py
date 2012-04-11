@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import pickle
+import os
 
 class Persister:
 
@@ -8,14 +9,14 @@ class Persister:
         self.path = path
 
     def save(self, data):
-        # write python dict to a file
         output = open(self.path, 'wb')
         pickle.dump(data, output)
         output.close()
 
     def load(self):
-        # read python dict back from the file
-        pkl_file = open(self.path, 'rb')
-        data = pickle.load(pkl_file)
-        pkl_file.close()
+        data = None
+        if os.path.exists(self.path):
+            pkl_file = open(self.path, 'rb')
+            data = pickle.load(pkl_file)
+            pkl_file.close()
         return data
