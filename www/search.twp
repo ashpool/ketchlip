@@ -4,8 +4,11 @@
     <input type="submit" value="Search" />
 </form>
 </div>
-<div>{{'%.2f' % search_time_in_ms}} ms</div>
+
+<div><p>{{results_len}} results ({{'%.2f' % search_time_in_ms}} ms)</p></div>
 
 {% for result in results %}
-    <div><a href="{{ result }}">{{ result }}</a></div>
+    <div><a href="{{ result[0] }}">{{ result[2] }}</a></div>
+    <div><a href="{{ result[0] }}">{{ result[1] }}</a></div>
+    <div><p></p></div>
 {% endfor %}

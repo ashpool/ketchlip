@@ -33,8 +33,7 @@ class MyHandler(BaseHTTPRequestHandler):
                 search_time_ms = (time.time() - x) * 1000.0
 
                 template = Template(DynamicContentLoader().load(page))
-                content = template.render(query=" ".join(query), results=results, search_time_in_ms=search_time_ms)
-
+                content = template.render(query=" ".join(query), results=results, results_len=len(results), search_time_in_ms=search_time_ms)
                 self.wfile.write(content)
             return
 
