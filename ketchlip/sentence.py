@@ -11,5 +11,5 @@ class Sentence:
         ret = []
         s = str(self.sentence)
         for word in s.split():
-            ret = ret + Word(word).slugify(lower=False)
+            ret += Word(word).slugify(lower=False)
         return " ".join(ret).strip()

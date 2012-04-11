@@ -54,7 +54,7 @@ class IndexerTest(unittest.TestCase):
 
         urllib2.urlopen = Mock(return_value=response_mock)
 
-        resp = urllib2.urlopen()
+        resp = urllib2.urlopen("http://a.com")
 
         self.assertEqual(html, resp.read())
         self.assertEqual(url, resp.url)
