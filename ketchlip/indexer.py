@@ -140,11 +140,8 @@ class Indexer:
         else:
             index[keyword] = [[pos, url]]
 
-# todo rename to tweet_indexer
-# todo add blacklist - http://pypi.python.org/pypi/Google%20Safe%20Browsing%20v2%20Lookup/
-# todo expand shortened links
+# todo make indexer continue on old index file
 # todo put files in config
-# todo add title ot short text to url
 # todo ignore words ignorewords=set(['the','of','to','and','a','in','is','it'])
 
 def main():
@@ -179,5 +176,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
