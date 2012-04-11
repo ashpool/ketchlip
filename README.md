@@ -16,4 +16,29 @@ Ketchlip needs these libraries to run:
 * pickle
 * jinja2
 
+## Usage
+
+### Scanning
+The script tweet_scanner.py will scan your friends timeline for links in tweets. Links found are saved in /tmp/tweets.txt.
+You will need to configure your Twitter access tokens in ketchlip.cfg in order to connect with Twitter.
+The access tokens can be found on your applications's Details page located at https://dev.twitter.com/apps
+(located under "Your access token"). tweet_scanner will save the last loaded status id, so when the script is run later it
+will catch up from last status to current in the timeline.
+
+> python tweet_scanner.py
+
+### Indexing
+
+The script indexer.py reads the tweets.txt produced by tweet_scanner.py and creates and index, graph, and url lookup files.
+
+> python indexer.py
+
+### Webserver
+
+The script webserver.py starts a simple http-server that can be accessed on http://localhost/search.twp
+
+> python webserver.py
+
+
+
 
