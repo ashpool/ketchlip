@@ -12,7 +12,7 @@ class Word:
     def __init__(self, word):
         self.word = word
 
-    def slugify(self, delim=u' '):
+    def slugify(self, delim=u' ', lower=True):
         _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+')
 
         text = str(self.word).decode('utf-8')
@@ -20,7 +20,10 @@ class Word:
         text = remove_html_tags(text)
 
         result = []
-        for word in _punct_re.split(text.lower()):
+        if lower:
+            text = text.lower()
+
+        for word in _punct_re.split(text):
             word = normalize('NFKD', word).encode('ascii', 'ignore')
             if word:
                 result.append(word)
