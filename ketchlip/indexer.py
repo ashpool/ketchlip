@@ -3,65 +3,47 @@
 import urllib2
 from bs4 import BeautifulSoup
 import re
+import gevent
+from gevent.queue import Queue
 from ketchlip.sentence import Sentence
 import klogger
 
 from persister import Persister
 from word import Word
 
-class Indexer:
+class Crawler:
+    URL = "URL"
+    EXPANDED_URL = "EXPANDED_URL"
+    TITLE = "TITLE"
+    TEXT = "TEXT"
+    LINKS = "LINKS"
+    CONTENT = "CONTENT"
 
-    # todo refactor links_file to list of links
-    def crawl(self, url_list): # returns index, graph of inlinks
-        """
-        Note that most of the twitter urls are shortened, thus the concept of
-        the url (usually shortened) and the expanded url (the response url)
+    def gevent_crawl(self, name):
+        while not input_queue.empty():
+            url = input_queue.get()
+            print "Crawler", name, "received",  url
+            gevent.sleep(0)
+            result = self.crawl(url)
+            if result:
+                output_queue.put_nowait(result)
 
-        graph => {url: [list of urls]}
-        index => {word: [word_position, url_index_pos]}
-        url_lookup => {url_index_pos: [url, expanded_url, title, text]}
-        """
-        URL_INDEX_POS = 0
-        EXPANDED_URL_POS = 1
-        TITLE_POS = 2
-        TEXT_POS = 3
+    def crawl(self, url):
+        content, expanded_url = self.get_page(url)
+        if content and expanded_url:
+            text, title = self.parse_page(content)
+            if text and title:
+                if len(text) > 100:
+                    text = text[:100]
+                result = {}
+                result[Crawler.URL] = url.strip()
+                result[Crawler.EXPANDED_URL] = expanded_url.strip()
+                result[Crawler.TITLE] = title.strip()
+                result[Crawler.TEXT] = text.strip()
+                result[Crawler.CONTENT] = content.strip()
 
-        crawled = {}
-        lookup_url = {} # {url: [expanded url, title, content (100 chars)]}
-        graph = {}  # <url>, [list of pages it links to]
-        index = {}
+                return result
 
-        for url in url_list:
-            url = url.strip()
-            assert len(crawled) == len(lookup_url)
-
-            if url not in crawled:
-                content, expanded_url = self.get_page(url)
-                if content and expanded_url:
-                    crawled[url] = len(crawled.items())
-                    lookup_url[url] = [len(lookup_url.items()), "", "", ""]
-                    text, title = self.add_page_to_index(index, lookup_url[url][URL_INDEX_POS], content)
-                    if text and title:
-                        if len(text) > 100:
-                            text = text[:100]
-                        lookup_url[url][EXPANDED_URL_POS] = expanded_url
-                        lookup_url[url][TITLE_POS] = title
-                        lookup_url[url][TEXT_POS] = text
-
-                    out_links = self.get_all_links(content)
-                    if out_links:
-                        graph[url] = out_links
-            else:
-                klogger.info("Already crawled " + url)
-
-
-        # reverse the lookup url dictionary
-
-        url_lookup = dict((v[URL_INDEX_POS], [k, v[EXPANDED_URL_POS], v[TITLE_POS], v[TEXT_POS]]) for k, v in lookup_url.iteritems())
-
-        assert len(url_lookup) == len(lookup_url)
-
-        return index, graph, url_lookup
 
     def get_page(self,  url):
         """
@@ -75,6 +57,26 @@ class Indexer:
             klogger.info("Opened " +  expanded_url)
 
             return html, expanded_url
+        except Exception, e:
+            klogger.exception(e)
+            return None, None
+
+    def parse_page(self, content):
+        """
+        Splits the content of the url and adds every single word and its position to the index.
+        """
+        try:
+            # todo BeautifulSoup is throwing a lots of errors - too sensitive to malformatted html?
+            soup = BeautifulSoup(content)
+            text = soup.html.body.get_text()
+            title = ""
+            if soup.html and soup.html.head and soup.html.title:
+                title = Sentence(soup.html.head.title.string).sanitize()
+
+            if not text:
+                return None, None
+
+            return text, title
         except Exception, e:
             klogger.exception(e)
             return None, None
@@ -97,12 +99,45 @@ class Indexer:
                 page = page[end_pos:]
             else:
                 break
-        return links
 
-    def union(self, a, b):
-        for e in b:
-            if e not in a:
-                a.append(e)
+class Indexer:
+
+    def index(self, results):
+        crawled = {}
+        lookup_url = {} # {url: [expanded url, title, content (100 chars)]}
+        graph = {}  # <url>, [list of pages it links to]
+        index = {}
+
+        for result in results:
+            URL_INDEX_POS = 0
+            EXPANDED_URL_POS = 1
+            TITLE_POS = 2
+            TEXT_POS = 3
+
+            url = result[Crawler.URL]
+            assert len(crawled) == len(lookup_url)
+
+            if url in crawled:
+                klogger.info("Already crawled " + url)
+                return
+
+
+            crawled[url] = len(crawled.items())
+            lookup_url[url] = [len(lookup_url.items()), "", "", ""]
+
+            lookup_url[url][EXPANDED_URL_POS] = result[Crawler.EXPANDED_URL]
+            lookup_url[url][TITLE_POS] = result[Crawler.TITLE]
+            lookup_url[url][TEXT_POS] = result[Crawler.TEXT]
+            self.add_page_to_index(index, lookup_url[url][URL_INDEX_POS], result[Crawler.CONTENT])
+
+            if Crawler.LINKS in result:
+                graph[url] = result[Crawler.LINKS]
+
+        url_lookup = dict((v[URL_INDEX_POS], [k, v[EXPANDED_URL_POS], v[TITLE_POS], v[TEXT_POS]]) for k, v in lookup_url.iteritems())
+        assert len(url_lookup) == len(lookup_url)
+
+        return index, graph, url_lookup
+
 
     def add_page_to_index(self, index, url, content):
         """
@@ -112,12 +147,6 @@ class Indexer:
             # todo BeautifulSoup is throwing a lots of errors - too sensitive to malformatted html?
             soup = BeautifulSoup(content)
             text = soup.html.body.get_text()
-            title = ""
-            if soup.html and soup.html.head and soup.html.title:
-                title = Sentence(soup.html.head.title.string).sanitize()
-
-            if not text:
-                return
 
             words = re.split('\W+', text)
 
@@ -129,10 +158,9 @@ class Indexer:
                         self.add_to_index(index, word, pos, url)
                         pos += 1
 
-            return text, title
         except Exception, e:
             klogger.exception(e)
-            return None, None
+
 
     def add_to_index(self, index, keyword, pos, url):
         if keyword in index:
@@ -143,6 +171,9 @@ class Indexer:
 # todo make indexer continue on old index file
 # todo put files in config
 # todo ignore words ignorewords=set(['the','of','to','and','a','in','is','it'])
+
+input_queue = Queue()
+output_queue = Queue()
 
 def main():
     """
@@ -160,7 +191,25 @@ def main():
 
         klogger.info("Indexing " + tweetfile)
 
-        index, graph, url_lookup = Indexer().crawl(open(tweetfile, "r"))
+        url_list = open(tweetfile, "r")
+        for url in url_list:
+            input_queue.put_nowait(url)
+
+        # Spawn off multiple crawlers
+        gevent.joinall([
+            gevent.spawn(Crawler().gevent_crawl, "foo"),
+            gevent.spawn(Crawler().gevent_crawl, "bar"),
+            gevent.spawn(Crawler().gevent_crawl, "zoz"),
+            gevent.spawn(Crawler().gevent_crawl, "zap"),
+            gevent.spawn(Crawler().gevent_crawl, "fuz")
+            ])
+
+        results = []
+        while not output_queue.empty():
+            results.append(output_queue.get())
+            gevent.sleep(0)
+
+        index, graph, url_lookup = Indexer().index(results)
 
         Persister(indexfile).save(index)
         Persister(graphfile).save(graph)

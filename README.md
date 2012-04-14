@@ -15,6 +15,7 @@ Ketchlip needs these libraries to run:
 * BeautifulSoup
 * pickle
 * jinja2
+* gevent
 
 ## Usage
 

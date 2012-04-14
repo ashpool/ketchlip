@@ -3,7 +3,7 @@
 import unittest
 import urllib2
 from mock import Mock
-from ketchlip.indexer import Indexer
+from ketchlip.indexer import Indexer, Crawler
 
 
 class IndexerTest(unittest.TestCase):
@@ -61,34 +61,29 @@ class IndexerTest(unittest.TestCase):
 
     def test_crawl(self):
 
-        html = """
-        <html>
+        html = \
+        """<html>
             <head>
                 <title>Python is fun!</title>
             </head>
             <body>
                 <div>Python is similar to Ruby, but different.</div>
             </body>
-        </html>
-        """
+        </html>"""
 
         response_mock = Mock(url="http://expanded_url.com")
         response_mock.read = Mock(return_value=html)
         urllib2.urlopen = Mock(return_value=response_mock)
-        url_list = ["http://a.com", "http://b.com", "http://c.com"]
+        url = "http://a.com"
 
-        indexer = Indexer()
+        crawler = Crawler()
 
-        index, graph, url_lookup = indexer.crawl(url_list)
+        result = crawler.crawl(url)
 
-        expected_index = {u'but': [[5, 0], [5, 1], [5, 2]],
-            u'different': [[6, 0], [6, 1], [6, 2]],
-            u'is': [[1, 0], [1, 1], [1, 2]],
-            u'python': [[0, 0], [0, 1], [0, 2]],
-            u'ruby': [[4, 0], [4, 1], [4, 2]],
-            u'similar': [[2, 0], [2, 1], [2, 2]],
-            u'to': [[3, 0], [3, 1], [3, 2]]}
+        expected_result = {'CONTENT': html,
+                           'EXPANDED_URL': 'http://expanded_url.com',
+                           'TEXT': u'Python is similar to Ruby, but different.',
+                           'TITLE': u'Python is fun',
+                           'URL': 'http://a.com'}
 
-        self.assertEqual(expected_index, index)
-        self.assertEqual({}, graph)
-        self.assertEqual( ['http://a.com', 'http://expanded_url.com', u'Python is fun', u'\nPython is similar to Ruby, but different.\n'], url_lookup[0])
+        self.assertEqual(expected_result, result)
