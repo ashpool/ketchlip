@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python ./ketchlip/webserver.py

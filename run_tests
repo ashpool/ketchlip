@@ -1,0 +1,2 @@
+#!/bin/sh
+exec nosetests --quiet --with-coverage --cover-package ketchlip
