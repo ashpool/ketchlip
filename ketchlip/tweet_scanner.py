@@ -52,8 +52,8 @@ def scan(api, last_status_processed = None, base_dir = "/tmp"):
 def main():
     try:
         cfg = ConfigParser.ConfigParser()
-
         cfg.read("./ketchlip.cfg")
+
         CONSUMER_KEY = cfg.get("Twitter", "CONSUMER_KEY")
         CONSUMER_SECRET = cfg.get("Twitter", "CONSUMER_SECRET")
         ACCESS_TOKEN = cfg.get("Twitter", "ACCESS_TOKEN")
