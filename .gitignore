@@ -2,3 +2,4 @@ ketchlip.cfg
 .idea/
 *.pyc
 *.log
+.coverage
