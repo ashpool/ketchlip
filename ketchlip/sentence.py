@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-from ketchlip.word import Word
+from word import Word
 
 class Sentence:
 
