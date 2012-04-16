@@ -1,11 +1,13 @@
 #-*- coding: utf-8 -*-
+import ConfigParser
 
 import urllib2
 from bs4 import BeautifulSoup
 import re
 import gevent
 from gevent.queue import Queue
-from ketchlip.sentence import Sentence
+import time
+from sentence import Sentence
 import klogger
 
 from persister import Persister
@@ -21,12 +23,14 @@ class Crawler:
 
     def gevent_crawl(self, name):
         while not input_queue.empty():
+            start = time.time()
             url = input_queue.get()
-            print "Crawler", name, "received",  url
             gevent.sleep(0)
             result = self.crawl(url)
             if result:
                 output_queue.put_nowait(result)
+            elapsed = (time.time() - start)
+            print "Crawler", name, "crawler", url, "time ", str(elapsed)
 
     def crawl(self, url):
         content, expanded_url = self.get_page(url)
@@ -58,7 +62,7 @@ class Crawler:
 
             return html, expanded_url
         except Exception, e:
-            klogger.exception(e)
+            #klogger.exception(e)
             return None, None
 
     def parse_page(self, content):
@@ -78,7 +82,7 @@ class Crawler:
 
             return text, title
         except Exception, e:
-            klogger.exception(e)
+            #klogger.exception(e)
             return None, None
 
     def get_next_target(self, page):
@@ -102,41 +106,55 @@ class Crawler:
 
 class Indexer:
 
-    def index(self, results):
-        crawled = {}
-        lookup_url = {} # {url: [expanded url, title, content (100 chars)]}
-        graph = {}  # <url>, [list of pages it links to]
-        index = {}
+    #def __init__(self):
+    #    self.ignorewords=set(['the','of','to','and','a','in','is','it'])
 
-        for result in results:
-            URL_INDEX_POS = 0
-            EXPANDED_URL_POS = 1
-            TITLE_POS = 2
-            TEXT_POS = 3
+    def gevent_index(self, input_queue, result_queue):
+        URL_INDEX_POS = 0
+        EXPANDED_URL_POS = 1
+        TITLE_POS = 2
+        TEXT_POS = 3
 
-            url = result[Crawler.URL]
-            assert len(crawled) == len(lookup_url)
+        self.crawled = {}
+        self.lookup_url = {} # {url: [expanded url, title, content (100 chars)]}
+        self.graph = {}  # <url>, [list of pages it links to]
+        self.index = {}
 
-            if url in crawled:
-                klogger.info("Already crawled " + url)
-                return
+        gevent.sleep(30)
+
+        while not (input_queue.empty() and result_queue.empty()):
+            result = result_queue.get(timeout=15)
+            self.indexing(result)
+            gevent.sleep(0)
+
+        self.url_lookup = dict((v[URL_INDEX_POS], [k, v[EXPANDED_URL_POS], v[TITLE_POS], v[TEXT_POS]]) for k, v in self.lookup_url.iteritems())
+        assert len(self.url_lookup) == len(self.lookup_url)
 
 
-            crawled[url] = len(crawled.items())
-            lookup_url[url] = [len(lookup_url.items()), "", "", ""]
+    def indexing(self, result):
+        URL_INDEX_POS = 0
+        EXPANDED_URL_POS = 1
+        TITLE_POS = 2
+        TEXT_POS = 3
 
-            lookup_url[url][EXPANDED_URL_POS] = result[Crawler.EXPANDED_URL]
-            lookup_url[url][TITLE_POS] = result[Crawler.TITLE]
-            lookup_url[url][TEXT_POS] = result[Crawler.TEXT]
-            self.add_page_to_index(index, lookup_url[url][URL_INDEX_POS], result[Crawler.CONTENT])
+        url = result[Crawler.URL]
+        assert len(self.crawled) == len(self.lookup_url)
 
-            if Crawler.LINKS in result:
-                graph[url] = result[Crawler.LINKS]
+        if url in self.crawled:
+            klogger.info("Already crawled " + url)
+            return
+        klogger.info("Indexing " + url)
+        self.crawled[url] = len(self.crawled.items())
+        self.lookup_url[url] = [len(self.lookup_url.items()), "", "", ""]
 
-        url_lookup = dict((v[URL_INDEX_POS], [k, v[EXPANDED_URL_POS], v[TITLE_POS], v[TEXT_POS]]) for k, v in lookup_url.iteritems())
-        assert len(url_lookup) == len(lookup_url)
+        self.lookup_url[url][EXPANDED_URL_POS] = result[Crawler.EXPANDED_URL]
+        self.lookup_url[url][TITLE_POS] = result[Crawler.TITLE]
+        self.lookup_url[url][TEXT_POS] = result[Crawler.TEXT]
+        self.add_page_to_index(self.index, self.lookup_url[url][URL_INDEX_POS], result[Crawler.CONTENT])
 
-        return index, graph, url_lookup
+        if Crawler.LINKS in result:
+            self.graph[url] = result[Crawler.LINKS]
+
 
 
     def add_page_to_index(self, index, url, content):
@@ -169,11 +187,10 @@ class Indexer:
             index[keyword] = [[pos, url]]
 
 # todo make indexer continue on old index file
-# todo put files in config
-# todo ignore words ignorewords=set(['the','of','to','and','a','in','is','it'])
 
 input_queue = Queue()
 output_queue = Queue()
+
 
 def main():
     """
@@ -184,10 +201,15 @@ def main():
     * url_lookupfile: dictionary containing url ids - {url_id: url}
     """
     try:
-        tweetfile = "/tmp/tweets.txt"
-        indexfile = "/tmp/index"
-        graphfile = "/tmp/graph"
-        url_lookupfile = "/tmp/url_lookup"
+        cfg = ConfigParser.ConfigParser()
+        cfg.read("/Users/magnus/src/ketchlip/ketchlip.cfg")
+
+        BASE_DIR = cfg.get("Files", "BASE_DIR")
+
+        tweetfile = BASE_DIR + "/tweets.txt"
+        indexfile = BASE_DIR + "/index"
+        graphfile = BASE_DIR + "/graph"
+        url_lookupfile = BASE_DIR + "/url_lookup"
 
         klogger.info("Indexing " + tweetfile)
 
@@ -195,21 +217,21 @@ def main():
         for url in url_list:
             input_queue.put_nowait(url)
 
+        indexer = Indexer()
+
         # Spawn off multiple crawlers
         gevent.joinall([
-            gevent.spawn(Crawler().gevent_crawl, "foo"),
-            gevent.spawn(Crawler().gevent_crawl, "bar"),
-            gevent.spawn(Crawler().gevent_crawl, "zoz"),
-            gevent.spawn(Crawler().gevent_crawl, "zap"),
-            gevent.spawn(Crawler().gevent_crawl, "fuz")
+            gevent.spawn(Crawler().gevent_crawl, "A"),
+            gevent.spawn(Crawler().gevent_crawl, "B"),
+            gevent.spawn(Crawler().gevent_crawl, "C"),
+            gevent.spawn(Crawler().gevent_crawl, "D"),
+            gevent.spawn(Crawler().gevent_crawl, "E"),
+            gevent.spawn(indexer.gevent_index, input_queue, output_queue)
             ])
 
-        results = []
-        while not output_queue.empty():
-            results.append(output_queue.get())
-            gevent.sleep(0)
-
-        index, graph, url_lookup = Indexer().index(results)
+        index = indexer.index
+        graph = indexer.graph
+        url_lookup = indexer.url_lookup
 
         Persister(indexfile).save(index)
         Persister(graphfile).save(graph)
@@ -225,3 +247,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
