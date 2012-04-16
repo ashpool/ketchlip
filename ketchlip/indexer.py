@@ -202,7 +202,7 @@ def main():
     """
     try:
         cfg = ConfigParser.ConfigParser()
-        cfg.read("/Users/magnus/src/ketchlip/ketchlip.cfg")
+        cfg.read("./ketchlip.cfg")
 
         BASE_DIR = cfg.get("Files", "BASE_DIR")
 
