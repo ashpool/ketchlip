@@ -20,7 +20,7 @@ def get_all_links(text):
     return links
 
 def scan(api, last_status_processed = None, base_dir = "/tmp"):
-    BATCH_SIZE = 1
+    BATCH_SIZE = 5
     tweets = []
 
     while True:
