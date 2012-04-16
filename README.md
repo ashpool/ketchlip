@@ -40,6 +40,12 @@ The script webserver.py starts a simple http-server that can be accessed on http
 
 > python webserver.py
 
+## Testing
+
+Run all tests with coverage report:
+
+> nosetests --quiet --with-coverage --cover-package ketchlip
+
 
 
 
