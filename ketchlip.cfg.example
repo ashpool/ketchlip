@@ -7,3 +7,8 @@ CONSUMER_KEY:
 CONSUMER_SECRET: 
 ACCESS_TOKEN: 
 ACCESS_TOKEN_SECRET:
+
+
+[Files]
+# TweetScanner and Indexer will save their files in this directory.
+BASE_DIR = /tmp
