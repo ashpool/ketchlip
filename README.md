@@ -28,11 +28,19 @@ will catch up from last status to current in the timeline.
 
 > python tweet_scanner.py
 
+or
+
+> run_tweet_scanner
+
 ### Indexing
 
 The script indexer.py reads the tweets.txt produced by tweet_scanner.py and creates and index, graph, and url lookup files.
 
 > python indexer.py
+
+or
+
+> run_indexer
 
 ### Webserver
 
@@ -40,12 +48,18 @@ The script webserver.py starts a simple http-server that can be accessed on http
 
 > python webserver.py
 
+or
+
+> run_webserver
+
 ## Testing
 
 Run all tests with coverage report:
 
 > nosetests --quiet --with-coverage --cover-package ketchlip
 
+or
 
+> run_tests
 
 
