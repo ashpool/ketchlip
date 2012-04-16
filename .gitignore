@@ -3,3 +3,4 @@ ketchlip.cfg
 *.pyc
 *.log
 .coverage
+files
