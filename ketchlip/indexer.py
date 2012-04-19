@@ -67,40 +67,34 @@ class Crawler:
 class Indexer:
 
     def __init__(self):
-    #    self.ignorewords=set(['the','of','to','and','a','in','is','it'])
-        #self.crawled = {}
+        #self.ignorewords=set(['the','of','to','and','a','in','is','it'])
+        self.URL_INDEX_POS = 0
+        self.EXPANDED_URL_POS = 1
+        self.TITLE_POS = 2
+        self.TEXT_POS = 3
+
+
         self.lookup_url = {} # {url: [expanded url, title, content (100 chars)]}
         self.graph = {}  # <url>, [list of pages it links to]
         self.index = {}
 
     def gevent_index(self, input_queue, result_queue):
-        # todo refactor this redundancy
-        URL_INDEX_POS = 0
-        EXPANDED_URL_POS = 1
-        TITLE_POS = 2
-        TEXT_POS = 3
-
         self.done = False
 
-        gevent.sleep(30)
+        gevent.sleep(30) # give the crawlers some heads up
 
         while not (input_queue.empty() and result_queue.empty()):
-            result = result_queue.get(timeout=15)
+            result = result_queue.get(timeout=15) # the crawlers should be able to produce output below this threshold
             if result[Crawler.STATUS] == "OK":
                 self.indexing(result)
             gevent.sleep(0)
 
-        self.url_lookup = dict((v[URL_INDEX_POS], [k, v[EXPANDED_URL_POS], v[TITLE_POS], v[TEXT_POS]]) for k, v in self.lookup_url.iteritems())
+        self.url_lookup = dict((v[self.URL_INDEX_POS], [k, v[self.EXPANDED_URL_POS], v[self.TITLE_POS], v[self.TEXT_POS]]) for k, v in self.lookup_url.iteritems())
         assert len(self.url_lookup) == len(self.lookup_url)
         self.done = True
 
     def indexing(self, result):
         try:
-            URL_INDEX_POS = 0
-            EXPANDED_URL_POS = 1
-            TITLE_POS = 2
-            TEXT_POS = 3
-
             url = result[Crawler.URL].strip()
 
             if url in self.lookup_url:
@@ -116,10 +110,10 @@ class Indexer:
                 short_text = short_text[:100]
 
             self.lookup_url[url] = [len(self.lookup_url.items()), "", "", ""]
-            self.lookup_url[url][EXPANDED_URL_POS] = result[Crawler.EXPANDED_URL]
-            self.lookup_url[url][TITLE_POS] = title
-            self.lookup_url[url][TEXT_POS] = short_text
-            self.add_page_to_index(self.index, self.lookup_url[url][URL_INDEX_POS], text)
+            self.lookup_url[url][self.EXPANDED_URL_POS] = result[Crawler.EXPANDED_URL]
+            self.lookup_url[url][self.TITLE_POS] = title
+            self.lookup_url[url][self.TEXT_POS] = short_text
+            self.add_page_to_index(self.index, self.lookup_url[url][self.URL_INDEX_POS], text)
 
             if Crawler.LINKS in result:
                 self.graph[url] = result[Crawler.LINKS]
