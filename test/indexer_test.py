@@ -24,7 +24,7 @@ class IndexerTest(unittest.TestCase):
         indexer = Indexer()
         index = {}
         url = "http://dn.se"
-        content = "<html><body>a brown fox</body></html>"
+        content = "a brown fox"
         indexer.add_page_to_index(index, url, content)
         self.assertEqual({u'a': [[0, 'http://dn.se']], u'brown': [[1, 'http://dn.se']], u'fox': [[2, 'http://dn.se']]}, index)
 
@@ -32,7 +32,7 @@ class IndexerTest(unittest.TestCase):
         indexer = Indexer()
         index = {}
         url = "http://dn.se"
-        content = "<html><body>a brown porcupinesporcupinesporcupinesporcupinesporcupinesporcupines</body></html>"
+        content = "a brown porcupinesporcupinesporcupinesporcupinesporcupinesporcupines"
         indexer.add_page_to_index(index, url, content)
         self.assertEqual({u'a': [[0, 'http://dn.se']], u'brown': [[1, 'http://dn.se']]}, index)
 
@@ -83,8 +83,6 @@ class IndexerTest(unittest.TestCase):
         expected_result = {'CONTENT': html,
                            'EXPANDED_URL': 'http://expanded_url.com',
                            'STATUS': 'OK',
-                           'TEXT': u'Python is similar to Ruby, but different.',
-                           'TITLE': u'Python is fun',
                            'URL': 'http://a.com'}
 
         self.assertEqual(expected_result, result)

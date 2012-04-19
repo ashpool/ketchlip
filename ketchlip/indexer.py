@@ -1,13 +1,12 @@
 #-*- coding: utf-8 -*-
 import ConfigParser
-
+from HTMLParser import HTMLParseError
 import urllib2
-from bs4 import BeautifulSoup
 import re
 import gevent
 from gevent.queue import Queue
 import time
-from sentence import Sentence
+from ketchlip_html_parser import KetchlipHTMLParser
 import klogger
 
 from persister import Persister
@@ -42,16 +41,9 @@ class Crawler:
 
         content, expanded_url = self.get_page(url)
         if content and expanded_url:
-            text, title = self.parse_page(content)
-            if text and title:
-                if len(text) > 100:
-                    text = text[:100]
-
-                result[Crawler.EXPANDED_URL] = expanded_url.strip()
-                result[Crawler.TITLE] = title.strip()
-                result[Crawler.TEXT] = text.strip()
-                result[Crawler.CONTENT] = content.strip()
-                result[Crawler.STATUS] = "OK"
+            result[Crawler.EXPANDED_URL] = expanded_url.strip()
+            result[Crawler.CONTENT] = content.strip()
+            result[Crawler.STATUS] = "OK"
 
         return result
 
@@ -71,57 +63,6 @@ class Crawler:
         except Exception, e:
             klogger.exception(e)
         return None, None
-
-    def rinse_and_wash(self, content):
-        content = content.replace('</SCR"+"IPT>', "</SCRIPT>")
-        content = content.replace("</' +\n'script>", "</script>")
-        return content
-
-
-    # todo extract html parsing
-    def parse_page(self, content):
-        """
-        Splits the content of the url and adds every single word and its position to the index.
-        """
-        try:
-            # todo BeautifulSoup is throwing a lots of errors - too sensitive to malformatted html?
-
-            content = self.rinse_and_wash(content)
-            soup = BeautifulSoup(content)
-            if not soup or not soup.html or not soup.html.body:
-                klogger.info("No soup: " + content)
-            text = soup.html.body.get_text()
-
-            title = ""
-            if soup.html and soup.html.head and soup.html.title:
-                title = Sentence(soup.html.head.title.string).sanitize()
-
-            if not text:
-                return None, None
-
-            return text, title
-        except Exception, e:
-            #klogger.exception(e)
-            return None, None
-
-    def get_next_target(self, page):
-        start_link = page.find('<a href=')
-        if start_link == -1:
-            return None, 0
-        start_quote = page.find('"', start_link)
-        end_quote = page.find('"', start_quote + 1)
-        url = page[start_quote + 1:end_quote]
-        return url, end_quote
-
-    def get_all_links(self, page):
-        links = []
-        while True:
-            url, end_pos = self.get_next_target(page)
-            if url:
-                links.append(url)
-                page = page[end_pos:]
-            else:
-                break
 
 class Indexer:
 
@@ -154,37 +95,46 @@ class Indexer:
         self.done = True
 
     def indexing(self, result):
-        URL_INDEX_POS = 0
-        EXPANDED_URL_POS = 1
-        TITLE_POS = 2
-        TEXT_POS = 3
+        try:
+            URL_INDEX_POS = 0
+            EXPANDED_URL_POS = 1
+            TITLE_POS = 2
+            TEXT_POS = 3
 
-        url = result[Crawler.URL].strip()
+            url = result[Crawler.URL].strip()
 
-        if url in self.lookup_url:
-            klogger.info("Already crawled " + url)
-            return
-        klogger.info("Indexing " + url)
-        self.lookup_url[url] = [len(self.lookup_url.items()), "", "", ""]
+            if url in self.lookup_url:
+                klogger.info("Already crawled " + url)
+                return
+            klogger.info("Indexing " + url)
 
-        self.lookup_url[url][EXPANDED_URL_POS] = result[Crawler.EXPANDED_URL]
-        self.lookup_url[url][TITLE_POS] = result[Crawler.TITLE]
-        self.lookup_url[url][TEXT_POS] = result[Crawler.TEXT]
-        self.add_page_to_index(self.index, self.lookup_url[url][URL_INDEX_POS], result[Crawler.CONTENT])
+            parser = KetchlipHTMLParser(result[Crawler.CONTENT])
+            title = parser.title()
+            text = parser.text()
+            short_text = text
+            if len(short_text) > 100:
+                short_text = short_text[:100]
 
-        if Crawler.LINKS in result:
-            self.graph[url] = result[Crawler.LINKS]
+            self.lookup_url[url] = [len(self.lookup_url.items()), "", "", ""]
+            self.lookup_url[url][EXPANDED_URL_POS] = result[Crawler.EXPANDED_URL]
+            self.lookup_url[url][TITLE_POS] = title
+            self.lookup_url[url][TEXT_POS] = short_text
+            self.add_page_to_index(self.index, self.lookup_url[url][URL_INDEX_POS], text)
+
+            if Crawler.LINKS in result:
+                self.graph[url] = result[Crawler.LINKS]
+        except HTMLParseError, e:
+            klogger.info(e)
+
+        except Exception, e:
+            klogger.error(e)
 
     def add_page_to_index(self, index, url, content):
         """
         Splits the content of the url and adds every single word and its position to the index.
         """
         try:
-            # todo BeautifulSoup is throwing a lots of errors - too sensitive to malformatted html?
-            soup = BeautifulSoup(content)
-            text = soup.html.body.get_text()
-
-            words = re.split('\W+', text)
+            words = re.split('\W+', content)
 
             pos = 0
             for word in words:
@@ -203,8 +153,6 @@ class Indexer:
             index[keyword].append([pos, url])
         else:
             index[keyword] = [[pos, url]]
-
-# todo make indexer continue on old index file
 
 input_queue = Queue()
 output_queue = Queue()
