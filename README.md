@@ -12,7 +12,7 @@ Ketchlip needs these libraries to run:
 * tweepy
 * nose
 * mock
-* BeautifulSoup
+* BeautifulSoup4
 * pickle
 * jinja2
 * gevent
