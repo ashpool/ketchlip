@@ -82,6 +82,7 @@ class IndexerTest(unittest.TestCase):
 
         expected_result = {'CONTENT': html,
                            'EXPANDED_URL': 'http://expanded_url.com',
+                           'STATUS': 'OK',
                            'TEXT': u'Python is similar to Ruby, but different.',
                            'TITLE': u'Python is fun',
                            'URL': 'http://a.com'}

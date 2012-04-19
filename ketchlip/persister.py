@@ -13,10 +13,12 @@ class Persister:
         pickle.dump(data, output)
         output.close()
 
-    def load(self):
+    def load(self, default_return = None):
         data = None
         if os.path.exists(self.path):
             pkl_file = open(self.path, 'rb')
             data = pickle.load(pkl_file)
             pkl_file.close()
-        return data
+        if data:
+            return data
+        return default_return

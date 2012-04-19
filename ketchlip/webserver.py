@@ -2,6 +2,7 @@
 
 import cgi
 import time
+import ConfigParser
 import klogger
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from dynamic_content_loader import DynamicContentLoader
@@ -57,10 +58,15 @@ class MyHandler(BaseHTTPRequestHandler):
             pass
 
 def main():
-    PORT = 80
+    PORT = 80 # you may have to sudo or be su to use port 80
     try:
         klogger.info("Warming up...")
-        SearchSingleton().load("/tmp/index", "/tmp/url_lookup")
+        # todo load files from config
+        cfg = ConfigParser.ConfigParser()
+        cfg.read("./ketchlip.cfg")
+
+        BASE_DIR = cfg.get("Files", "BASE_DIR")
+        SearchSingleton().load(BASE_DIR  + "/index", BASE_DIR  + "/url_lookup")
         server = HTTPServer(('', PORT), MyHandler)
         klogger.info("HTTP server ready to serve on port " + str(PORT))
         server.serve_forever()

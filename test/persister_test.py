@@ -28,6 +28,10 @@ class PersisterTest(unittest.TestCase):
         persister = Persister("/tmp/this_file_does_not_exist")
         self.assertIsNone(persister.load())
 
+    def test_default_return(self):
+        default_return = {}
+        persister = Persister("/tmp/this_file_does_not_exist")
+        self.assertEqual(default_return, persister.load(default_return))
 
 
 

@@ -42,7 +42,7 @@ def scan(api, last_status_processed = None, base_dir = "/tmp"):
                         klogger.info("Writing tweets to file")
                         f = codecs.open(base_dir + "/tweets.txt", "a", "utf-8")
                         for tweet in tweets:
-                            f.write(tweet + '\n')
+                            f.write(str(time.time()) + "\t" + tweet + "\n")
                         f.close()
                         Persister(base_dir + "/last_status_processed.txt").save(last_status_processed)
                         tweets = []
