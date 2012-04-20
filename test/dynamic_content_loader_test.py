@@ -7,7 +7,7 @@ from ketchlip.dynamic_content_loader import DynamicContentLoader
 class DynamicContentLoaderTest(unittest.TestCase):
     def setUp(self):
         self.loader = DynamicContentLoader()
-        self.hello_world_content = "<p>Hello World!</p>"
+        self.hello_world_content = '<p>Hello World!</p>\n<img src="/images/logo.png"/>\n\n'
 
     def test_load(self):
         content = self.loader.load("hello_world.twp", "./www/")
