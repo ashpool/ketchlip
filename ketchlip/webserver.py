@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+from SocketServer import BaseRequestHandler
 
 import cgi
 import time
@@ -12,6 +13,37 @@ from jinja2 import Template
 
 class MyHandler(BaseHTTPRequestHandler):
 
+    _www_root = 5
+
+    @classmethod
+    def get_www_root(cls):
+        return cls._www_root
+
+    @classmethod
+    def set_www_root(cls, value):
+        cls._www_root = value
+
+    def print_beginning(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(\
+"""
+<html>
+    <head>
+        <title>Ketchlip</title>
+        <link rel="stylesheet" type="text/css" href="/styles/ketchlip.css">
+    </head>
+    <body>
+""")
+
+    def print_end(self):
+        self.wfile.write(\
+"""
+    </body>
+</html>
+""")
+
     def do_GET(self):
         try:
             klogger.info("GET " + self.path)
@@ -19,10 +51,6 @@ class MyHandler(BaseHTTPRequestHandler):
             qs = Querystring(self.path)
             page = qs.page()
             if page:
-                self.send_response(200)
-                self.send_header('Content-type',	'text/html')
-                self.end_headers()
-
                 query = qs.get_values("search")
                 for i in range(len(query)):
                     query[i] = query[i].lower()
@@ -32,19 +60,35 @@ class MyHandler(BaseHTTPRequestHandler):
                 x = time.time()
                 results = SearchSingleton().query(query)
                 search_time_ms = (time.time() - x) * 1000.0
-
                 template = Template(DynamicContentLoader().load(page))
                 content = template.render(query=" ".join(query), results=results, results_len=len(results), search_time_in_ms=search_time_ms)
-                self.wfile.write(content)
+                self.print_beginning()
+                self.wfile.write(content.encode("utf-8"))
+                self.print_end()
+            elif self.path.endswith(".png"):
+                self.send_response(200)
+                self.send_header('Content-type',    'image/x-png')
+                self.send_header('Cache-control', 'no-cache')
+                self.send_header('Pragma', 'no-cache')
+                self.end_headers()
+                f = open(MyHandler.get_www_root() + self.path)
+                self.wfile.write(f.read())
+                f.close()
+            elif self.path.endswith(".css"):
+                print "MyHandler.get_www_root() + self.path", MyHandler.get_www_root() + self.path
+                f = open(MyHandler.get_www_root() + self.path)
+                self.send_response(200)
+                self.send_header('Content-type', 'text/css')
+                self.end_headers()
+                self.wfile.write(f.read())
+                f.close()
             return
 
         except IOError:
             self.send_error(404,'File Not Found: %s' % self.path)
 
-
     def do_POST(self):
         global rootnode
-
         try:
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             if ctype == 'multipart/form-data':
@@ -66,6 +110,9 @@ def main():
         cfg.read("./ketchlip.cfg")
 
         BASE_DIR = cfg.get("Files", "BASE_DIR")
+        WWW_ROOT = cfg.get("Files", "WWW_ROOT")
+        MyHandler.set_www_root(WWW_ROOT)
+
         SearchSingleton().load(BASE_DIR  + "/index", BASE_DIR  + "/url_lookup")
         server = HTTPServer(('', PORT), MyHandler)
         klogger.info("HTTP server ready to serve on port " + str(PORT))
