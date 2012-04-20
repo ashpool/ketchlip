@@ -15,6 +15,7 @@ class SearchSingleton(object):
             cls._instance.index = {}
         return cls._instance
 
+    # todo remove default values?
     def load(self, index_file = "/tmp/index", url_lookup_file = "/tmp/url_lookup"):
         self.index = Persister(index_file).load()
         self.url_lookup = Persister(url_lookup_file).load()
