@@ -1,9 +1,12 @@
+#-*- coding: utf-8 -*-
 import unittest
 from ketchlip.ketchlip_html_parser import KetchlipHTMLParser
 
 class KetchlipHTMLParserTest(unittest.TestCase):
 
     def setUp(self):
+
+        self.meta = '<meta name="description" content="Nyheter, fördjupning, sportnyheter, ekonominyheter, utrikesnyheter, debatt, ledare, kultur, webb-tv och bloggar. DN.se är utsedd till Sveriges bästa nyhetstidning på nätet./>'
 
         self.body = \
 """
@@ -24,6 +27,7 @@ class KetchlipHTMLParserTest(unittest.TestCase):
 <html>
     <head>
         <title>This is the title</title>
+        <meta name="description" content="This is the content meta tag"/>
     </head>
 """ \
 + self.body + \
@@ -80,6 +84,19 @@ class KetchlipHTMLParserTest(unittest.TestCase):
     def test_parse_text_without_empty__html_content_should_return_empty_string(self):
         parser = KetchlipHTMLParser("")
         self.assertEqual("", parser.text())
+
+    def test_parse_description(self):
+        parser = KetchlipHTMLParser(self.html)
+        self.assertEqual("This is the content meta tag", parser.description())
+
+    def test_parse_description_should_return_empty_string_if_description_is_missing(self):
+        parser = KetchlipHTMLParser(self.html_with_empty_head_and_body)
+        self.assertEqual("", parser.description())
+
+    def test_parse_description_should_chomp_(self):
+        MAX_LENGTH = 20
+        parser = KetchlipHTMLParser(self.html)
+        self.assertEqual("This is the content ...", parser.description(MAX_LENGTH))
 
 
 if __name__ == '__main__':

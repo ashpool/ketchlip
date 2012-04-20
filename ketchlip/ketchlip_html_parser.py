@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import re
 from bs4 import BeautifulSoup
 
@@ -16,6 +18,17 @@ class KetchlipHTMLParser:
         if not soup.html or not soup.html.head or not soup.html.head.title:
             return ""
         return soup.html.head.title.get_text().strip()
+
+    def description(self, max_length = None):
+        soup = self.soup_factory(self.content)
+        meta_descriptions = soup.findAll('meta', {'name':'description'})
+        description = ''
+        for tag in meta_descriptions:
+            if tag.has_key('content'):
+                description += tag['content']
+        if max_length and len(description) > max_length:
+            description = description[:max_length].strip() + " ..."
+        return description
 
     def text(self):
         soup = self.soup_factory(self.content)
