@@ -40,7 +40,7 @@ class Indexer:
 
     def indexing(self, result):
         try:
-            DESCRIPTION_MAX_LENGTH = 160
+            DESCRIPTION_MAX_LENGTH = 260
             url = result[Crawler.URL].strip()
 
             if url in self.lookup_url:
