@@ -22,26 +22,47 @@ class MyHandler(BaseHTTPRequestHandler):
     def set_www_root(cls, value):
         cls._www_root = value
 
-    def print_beginning(self):
+    def write_js(self):
+        f = open(MyHandler.get_www_root() + self.path)
+        self.send_response(200)
+        self.send_header('Content-type', 'text/javascript')
+        self.end_headers()
+        self.wfile.write(f.read())
+        f.close()
+
+    def write_css(self):
+        f = open(MyHandler.get_www_root() + self.path)
+        self.send_response(200)
+        self.send_header('Content-type', 'text/css')
+        self.end_headers()
+        self.wfile.write(f.read())
+        f.close()
+
+    def write_png(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'image/x-png')
+        self.send_header('Cache-control', 'no-cache')
+        self.send_header('Pragma', 'no-cache')
+        self.end_headers()
+        f = open(MyHandler.get_www_root() + self.path)
+        self.wfile.write(f.read())
+        f.close()
+
+    def write_page(self, page, qs):
+        query = qs.get_values("search")
+        for i in range(len(query)):
+            query[i] = query[i].lower()
+        klogger.info("QUERY " + str(query))
+        x = time.time()
+        results = SearchSingleton().query(query)
+        search_time_ms = (time.time() - x) * 1000.0
+        template = Template(DynamicContentLoader().load(page))
+        content = template.render(query=" ".join(query), results=results, results_len=len(results),
+            search_time_in_ms=search_time_ms)
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-        self.wfile.write(\
-"""
-<html>
-    <head>
-        <title>Ketchlip</title>
-        <link rel="stylesheet" type="text/css" href="/styles/ketchlip.css">
-    </head>
-    <body>
-""")
-
-    def print_end(self):
-        self.wfile.write(\
-"""
-    </body>
-</html>
-""")
+        self.wfile.write(content.encode("utf-8"))
 
     def do_GET(self):
         try:
@@ -50,37 +71,13 @@ class MyHandler(BaseHTTPRequestHandler):
             qs = Querystring(self.path)
             page = qs.page()
             if page:
-                query = qs.get_values("search")
-                for i in range(len(query)):
-                    query[i] = query[i].lower()
-
-                klogger.info("QUERY " + str(query))
-
-                x = time.time()
-                results = SearchSingleton().query(query)
-                search_time_ms = (time.time() - x) * 1000.0
-                template = Template(DynamicContentLoader().load(page))
-                content = template.render(query=" ".join(query), results=results, results_len=len(results), search_time_in_ms=search_time_ms)
-                self.print_beginning()
-                self.wfile.write(content.encode("utf-8"))
-                self.print_end()
+                self.write_page(page, qs)
             elif self.path.endswith(".png"):
-                self.send_response(200)
-                self.send_header('Content-type',    'image/x-png')
-                self.send_header('Cache-control', 'no-cache')
-                self.send_header('Pragma', 'no-cache')
-                self.end_headers()
-                f = open(MyHandler.get_www_root() + self.path)
-                self.wfile.write(f.read())
-                f.close()
+                self.write_png()
             elif self.path.endswith(".css"):
-                print "MyHandler.get_www_root() + self.path", MyHandler.get_www_root() + self.path
-                f = open(MyHandler.get_www_root() + self.path)
-                self.send_response(200)
-                self.send_header('Content-type', 'text/css')
-                self.end_headers()
-                self.wfile.write(f.read())
-                f.close()
+                self.write_css()
+            elif self.path.endswith(".js"):
+                self.write_js()
             return
 
         except IOError:
@@ -104,7 +101,7 @@ def main():
     PORT = 80 # you may have to sudo or be su to use port 80
     try:
         klogger.info("Warming up...")
-        # todo load files from config
+
         cfg = ConfigParser.ConfigParser()
         cfg.read("./ketchlip.cfg")
 
