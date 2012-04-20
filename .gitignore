@@ -4,3 +4,4 @@ ketchlip.cfg
 *.log
 .coverage
 files
+.DS_Store
