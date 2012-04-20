@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-from SocketServer import BaseRequestHandler
 
 import cgi
 import time

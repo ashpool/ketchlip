@@ -27,9 +27,7 @@ class Crawler:
             klogger.info("Crawler " + name + " crawled " + url + " in " + str(elapsed) + " seconds")
 
     def crawl(self, url):
-        result = {}
-        result[Crawler.URL] = url.strip()
-        result[Crawler.STATUS] = "FAILED"  # let's start out with some pessimism ;-)
+        result = {Crawler.URL: url.strip(), Crawler.STATUS: "FAILED"}
 
         content, expanded_url = self.get_page(url)
         if content and expanded_url:
