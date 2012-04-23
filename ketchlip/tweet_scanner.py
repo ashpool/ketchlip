@@ -4,6 +4,7 @@ import re
 import time
 import tweepy
 import codecs
+from tweepy.error import TweepError
 import klogger
 from persister import Persister
 
@@ -49,6 +50,19 @@ def scan(api, last_status_processed = None, base_dir = "/tmp"):
 
         time.sleep(60)
 
+def run_scan(api, last_status_processed, base_dir, try_count = 0):
+    if try_count > 10:
+        klogger.error("Max retries reached")
+        return
+
+    try:
+        scan(api, last_status_processed = last_status_processed, base_dir = base_dir)
+    except TweepError, e:
+        klogger.error(e)
+    finally:
+        time.sleep(30)
+        run_scan(api, last_status_processed, base_dir, try_count + 1)
+
 def main():
     try:
         cfg = ConfigParser.ConfigParser()
@@ -72,7 +86,7 @@ def main():
         klogger.info("Base directory " + str(BASE_DIR))
         klogger.info("Last status processed " + str(last_status_processed))
 
-        scan(api, last_status_processed = last_status_processed, base_dir = BASE_DIR)
+        run_scan(api, last_status_processed = last_status_processed, base_dir = BASE_DIR)
 
     except KeyboardInterrupt:
         klogger.info('^C received, shutting down tweet scanner')
