@@ -1,2 +1,2 @@
 #!/bin/sh
-exec python ./ketchlip/webserver.py
+python -c 'from ketchlip import webserver; webserver.main()'
