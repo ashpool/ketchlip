@@ -98,6 +98,35 @@ class KetchlipHTMLParserTest(unittest.TestCase):
         parser = KetchlipHTMLParser(self.html)
         self.assertEqual("This is the content ...", parser.description(MAX_LENGTH))
 
+    def test_prettify(self):
+        html_with_script = \
+"""
+<html>
+    <head>
+        <title>Hello World!>/title>
+        <script>
+            $(document).ready(function() {
+                $("button").button();
+            });
+        </script>
+    </head>
+    <body>
+        <div>a brown fox</div>
+    <body>
+    <scr + ipt>
+        $(document).ready(function() {
+            $("button").button();
+        });
+    </scr + ipt>
+</html>
+"""
+        # todo find a smarter way to compare html
+
+        html_with_no_script ='\n<html>\n    <head>\n        <title>Hello World!>/title>\n        \n    </head>\n    <body>\n        <div>a brown fox</div>\n    <body>\n    \n</html>\n'
+
+        parser = KetchlipHTMLParser()
+        self.assertEqual(html_with_no_script, parser.prettify(html_with_script))
+
 
 if __name__ == '__main__':
     unittest.main()
