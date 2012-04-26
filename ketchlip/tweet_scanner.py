@@ -5,8 +5,8 @@ import time
 import tweepy
 import codecs
 from tweepy.error import TweepError
-import klogger
-from persister import Persister
+from ketchlip.utils import klogger
+from ketchlip.utils.persister import Persister
 
 
 def get_all_links(text):

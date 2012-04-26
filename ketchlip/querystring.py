@@ -32,7 +32,6 @@ class Querystring:
             uri = self.url
         start_point = uri.rfind("/") + 1
         page = uri[start_point:]
-        print page
         if page.find(".twp", -len(".twp")) > 0:
             return page
 
