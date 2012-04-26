@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import unittest
-from ketchlip.persister import Persister
+from ketchlip.utils.persister import Persister
 
 
 class PersisterTest(unittest.TestCase):
