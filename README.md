@@ -1,7 +1,7 @@
 # Ketchlip
 
 Inspired by the Udacity cs101 course I put together Ketchlip to scan Twitter for links in my friends tweets. 
-Ketchlip then crawl and index links found and makes them searchable through a simple webserver. I'm doing this for fun!
+Ketchlip crawls and indexes links found and makes them searchable through a simple webserver.
 
 
 ## Dependencies
@@ -26,19 +26,11 @@ The access tokens can be found on your applications's Details page located at ht
 (located under "Your access token"). tweet_scanner will save the last loaded status id, so when the script is run later it
 will catch up from last status to current in the timeline.
 
-> python tweet_scanner.py
-
-or
-
 > run_tweet_scanner
 
 ### Indexing
 
 The script indexer.py reads the tweets.txt produced by tweet_scanner.py and creates and index, graph, and url lookup files.
-
-> python indexer.py
-
-or
 
 > run_indexer
 
@@ -46,19 +38,11 @@ or
 
 The script webserver.py starts a simple http-server that can be accessed on http://localhost/search.twp
 
-> python webserver.py
-
-or
-
 > run_webserver
 
 ## Testing
 
 Run all tests with coverage report:
-
-> nosetests --quiet --with-coverage --cover-package ketchlip
-
-or
 
 > run_tests
 
