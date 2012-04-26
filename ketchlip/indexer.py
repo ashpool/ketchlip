@@ -5,16 +5,17 @@ import re
 import gevent
 from gevent.queue import Queue
 from crawler import Crawler
+from ketchlip.utils import klogger
 from ketchlip_html_parser import KetchlipHTMLParser
-import klogger
-from persister import Persister
-from word import Word
+from ketchlip.utils.persister import Persister
+from ketchlip.word import Word
 
 
 class Indexer:
 
     def __init__(self):
-        # todo introduce ignore words
+        # todo introduce ignore words (or perhaps do this a little smarter by counting word frequences?)
+        # todo exclude numbers
         #self.ignorewords=set(['the','of','to','and','a','in','is','it'])
         self.URL_INDEX_POS = 0
         self.EXPANDED_URL_POS = 1
