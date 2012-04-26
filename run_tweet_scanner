@@ -1,2 +1,2 @@
 #!/bin/sh
-exec python ./ketchlip/tweet_scanner.py
+python -c 'from ketchlip import tweet_scanner; tweet_scanner.main()'
