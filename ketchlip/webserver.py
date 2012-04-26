@@ -1,14 +1,12 @@
 #-*- coding: utf-8 -*-
 
 import cgi
-import time
 import ConfigParser
-import klogger
+from controller_factory import ControllerFactory
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from dynamic_content_loader import DynamicContentLoader
+from utils import klogger
 from querystring import Querystring
 from search_singleton import SearchSingleton
-from jinja2 import Template
 
 class MyHandler(BaseHTTPRequestHandler):
 
@@ -49,19 +47,14 @@ class MyHandler(BaseHTTPRequestHandler):
         f.close()
 
     def write_page(self, page, qs):
-        query = qs.get_values("search")
-        for i in range(len(query)):
-            query[i] = query[i].lower()
-        klogger.info("QUERY " + str(query))
-        x = time.time()
-        results = SearchSingleton().query(query)
-        search_time_ms = (time.time() - x) * 1000.0
-        template = Template(DynamicContentLoader().load(page))
-        content = template.render(query=" ".join(query), results=results, results_len=len(results),
-            search_time_in_ms=search_time_ms)
+
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
+
+        controller = ControllerFactory().create(page.split(".")[0])
+        content = controller.show(qs)
+
         self.wfile.write(content.encode("utf-8"))
 
     def do_GET(self):
