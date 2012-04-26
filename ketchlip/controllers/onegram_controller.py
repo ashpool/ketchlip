@@ -8,15 +8,11 @@ class OnegramController(BaseController):
         self.name = "onegram"
 
     def show(self, query_string):
-        #[[word, count], ...]
-
-        word_count = []
         index = SearchSingleton().index
+        word_count = []
 
         for k, v in index.items():
             word_count.append([k, len(v)])
-
-
 
         content = self.get_template().render(word_count = sorted(word_count, key=itemgetter(1), reverse=True))
         return content

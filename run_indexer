@@ -1,2 +1,2 @@
 #!/bin/sh
-exec python ./ketchlip/indexer.py
+python -c 'from scripts import indexer; indexer.main()'
