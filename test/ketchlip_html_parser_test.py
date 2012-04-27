@@ -57,6 +57,18 @@ class KetchlipHTMLParserTest(unittest.TestCase):
     </body>
 </html>
 """
+    def test_html_encode(self):
+        parser = KetchlipHTMLParser("")
+
+        self.assertEqual("&gt;", parser.html_encode(">"))
+        self.assertEqual("&lt;", parser.html_encode("<"))
+        self.assertEqual("&#229;", parser.html_encode("å"))
+        self.assertEqual("&#197;", parser.html_encode("Å"))
+        self.assertEqual("&#228;", parser.html_encode("ä"))
+        self.assertEqual("&#196;", parser.html_encode("Ä"))
+        self.assertEqual("&#246;", parser.html_encode("ö"))
+        self.assertEqual("&#214;", parser.html_encode("Ö"))
+
     def test_parse_title(self):
         parser = KetchlipHTMLParser(self.html)
         self.assertEqual("This is the title", parser.title())

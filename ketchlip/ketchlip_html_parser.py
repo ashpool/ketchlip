@@ -2,6 +2,7 @@
 
 import re
 from bs4 import BeautifulSoup
+import cgi
 
 class KetchlipHTMLParser:
 
@@ -24,7 +25,7 @@ class KetchlipHTMLParser:
         soup = self.get_soup()
         if not soup.html or not soup.html.head or not soup.html.head.title:
             return ""
-        return soup.html.head.title.get_text().strip()
+        return self.html_encode(soup.html.head.title.get_text().strip())
 
     def description(self, max_length = None):
         soup = self.get_soup()
@@ -35,7 +36,7 @@ class KetchlipHTMLParser:
                 description += tag['content']
         if max_length and len(description) > max_length:
             description = description[:max_length].strip() + " ..."
-        return description
+        return self.html_encode(description)
 
     def text(self):
         soup = self.get_soup()
@@ -50,3 +51,6 @@ class KetchlipHTMLParser:
         BeautifulSoup doesn't like malformatted tags like <scr + ipt>
         """
         return re.subn(r'<((sc.*?pt)).*?</\1>(?s)', '', html)[0]
+
+    def html_encode(self, text):
+        return cgi.escape(text.decode('utf-8')).encode('ascii', 'xmlcharrefreplace')
