@@ -76,7 +76,7 @@ def main():
             gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "F"),
             gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "G"),
             gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "H"),
-            gevent.spawn(indexer.gevent_index, input_queue, output_queue)
+            gevent.spawn_later(30, indexer.gevent_index, input_queue, output_queue)
         ])
 
         if not indexer.done:
