@@ -1,12 +1,9 @@
 #-*- coding: utf-8 -*-
 
-import cgi
-import ConfigParser
 from controller_factory import ControllerFactory
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from BaseHTTPServer import BaseHTTPRequestHandler
 from utils import klogger
 from querystring import Querystring
-from search_singleton import SearchSingleton
 
 class MyHandler(BaseHTTPRequestHandler):
 
@@ -63,14 +60,15 @@ class MyHandler(BaseHTTPRequestHandler):
 
             qs = Querystring(self.path)
             page = qs.page()
-            if page:
-                self.write_page(page, qs)
-            elif self.path.endswith(".png"):
+            if self.path.endswith(".png"):
                 self.write_png()
             elif self.path.endswith(".css"):
                 self.write_css()
             elif self.path.endswith(".js"):
                 self.write_js()
+            elif page:
+                self.write_page(page, qs)
+
             return
 
         except IOError:

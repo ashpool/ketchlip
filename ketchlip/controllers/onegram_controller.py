@@ -8,6 +8,7 @@ class OnegramController(BaseController):
         self.name = "onegram"
 
     def show(self, query_string):
+
         index = SearchSingleton().index
         word_count = []
 

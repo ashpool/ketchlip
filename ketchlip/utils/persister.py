@@ -2,7 +2,7 @@
 
 import pickle
 import os
-
+# todo add compression?
 class Persister:
 
     def __init__(self, path):
