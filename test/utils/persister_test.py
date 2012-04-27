@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import unittest
+from nose.tools import raises
 from ketchlip.utils.persister import Persister
 
 
