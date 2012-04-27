@@ -23,13 +23,17 @@ class Indexer:
         self.done = False
 
     def gevent_index(self, input_queue, result_queue):
-        gevent.sleep(30) # give the crawlers some heads up
-
+        greenlets = []
         while not input_queue.empty() or not result_queue.empty():
+            if len(greenlets) > 30:
+                klogger.info("Joining greenlets")
+                gevent.joinall(greenlets, timeout=30, raise_error=False)
+                greenlets = []
+
             result = result_queue.get(timeout=15) # the crawlers should be able to produce output below this threshold
+
             if result[Crawler.STATUS] == "OK":
-                self.indexing(result)
-            gevent.sleep(0)
+                greenlets.append(gevent.spawn(self.indexing, result))
 
         self.url_lookup = dict((v[self.URL_INDEX_POS], [k, v[self.EXPANDED_URL_POS], v[self.TITLE_POS], v[self.DESCRIPTION_POS]]) for k, v in self.lookup_url.iteritems())
         assert len(self.url_lookup) == len(self.lookup_url)
@@ -37,7 +41,7 @@ class Indexer:
 
     def indexing(self, result):
         """
-        result => {Crawler.CONTENT:html, Crawler.EXPANDED_URL:http://.., Crawler.LINKS:[]}
+        result => {Crawler.CONTENT:html, Crawler.URL:http://.., Crawler.EXPANDED_URL:http://.., Crawler.LINKS:[]}
         """
         try:
             DESCRIPTION_MAX_LENGTH = 260
@@ -61,11 +65,12 @@ class Indexer:
 
             if Crawler.LINKS in result:
                 self.graph[url] = result[Crawler.LINKS]
-        except HTMLParseError, e:
-            klogger.info(e)
 
         except Exception, e:
-            klogger.error(e)
+            klogger.info("ERROR")
+            klogger.info(result[Crawler.URL])
+            klogger.info(result[Crawler.EXPANDED_URL])
+            klogger.exception(e)
 
     def add_page_to_index(self, index, url, content):
         """
