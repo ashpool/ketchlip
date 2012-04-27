@@ -12,6 +12,7 @@ class Indexer:
 
     def __init__(self):
         # todo introduce ignore words (or perhaps do this a little smarter by counting word frequences?)
+        # todo idea: exclude the most frequent and the least frequent words
         # todo exclude numbers
         #self.ignorewords=set(['the','of','to','and','a','in','is','it'])
         self.URL_INDEX_POS = 0
