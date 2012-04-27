@@ -25,7 +25,8 @@ class KetchlipHTMLParser:
         soup = self.get_soup()
         if not soup.html or not soup.html.head or not soup.html.head.title:
             return ""
-        return self.html_encode(soup.html.head.title.get_text().strip())
+        #return self.html_encode(soup.html.head.title.get_text().strip())
+        return soup.html.head.title.get_text().strip()
 
     def description(self, max_length = None):
         soup = self.get_soup()
@@ -36,7 +37,8 @@ class KetchlipHTMLParser:
                 description += tag['content']
         if max_length and len(description) > max_length:
             description = description[:max_length].strip() + " ..."
-        return self.html_encode(description)
+        #return self.html_encode(description)
+        return description
 
     def text(self):
         soup = self.get_soup()
