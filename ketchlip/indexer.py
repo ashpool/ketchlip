@@ -11,10 +11,8 @@ from ketchlip.word import Word
 class Indexer:
 
     def __init__(self):
-        # todo introduce ignore words (or perhaps do this a little smarter by counting word frequences?)
         # todo idea: exclude the most frequent and the least frequent words
         # todo exclude numbers
-        #self.ignorewords=set(['the','of','to','and','a','in','is','it'])
         self.URL_INDEX_POS = 0
         self.EXPANDED_URL_POS = 1
         self.TITLE_POS = 2
@@ -38,6 +36,9 @@ class Indexer:
         self.done = True
 
     def indexing(self, result):
+        """
+        result => {Crawler.CONTENT:html, Crawler.EXPANDED_URL:http://.., Crawler.LINKS:[]}
+        """
         try:
             DESCRIPTION_MAX_LENGTH = 260
             url = result[Crawler.URL].strip()

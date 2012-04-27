@@ -8,6 +8,24 @@ from ketchlip.indexer import Indexer, Crawler
 
 class IndexerTest(unittest.TestCase):
 
+    def test_indexing(self):
+        # given
+        result = {Crawler.CONTENT: '<html><head><title>some title</title><meta name="description" content="some description"/></head><body><p>some text</p></body></html>',
+                  Crawler.EXPANDED_URL: "http://expandedurl.com",
+                  Crawler.URL: "http://url.com"}
+
+        # when
+        indexer = Indexer()
+        indexer.indexing(result)
+
+        # then
+        expected_index = {u'description': [[3, 0]],
+                          u'some': [[0, 0], [2, 0], [4, 0]],
+                          u'text': [[5, 0]],
+                          u'title': [[1, 0]]}
+
+        self.assertEqual(expected_index, indexer.index)
+
     def test_add_to_index(self):
         indexer = Indexer()
         index = {}
