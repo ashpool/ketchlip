@@ -1,5 +1,0 @@
-<html>
-{% for e in word_count %}
-    <div>{{ e[0] }}: {{ e[1] }}</div>
-{% endfor %}
-</html>
