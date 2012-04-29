@@ -1,10 +1,9 @@
 #-*- coding: utf-8 -*-
-from HTMLParser import HTMLParseError
 import re
 import gevent
 from crawler import Crawler
 from ketchlip.utils import klogger
-from ketchlip_html_parser import KetchlipHTMLParser
+from ketchlip.utils.ketchlip_html_parser import KetchlipHTMLParser
 from ketchlip.word import Word
 
 
