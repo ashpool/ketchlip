@@ -4,7 +4,7 @@ import gevent
 from crawler import Crawler
 from ketchlip.utils import klogger
 from ketchlip.utils.ketchlip_html_parser import KetchlipHTMLParser
-from ketchlip.word import Word
+from ketchlip.models.word import Word
 
 
 class Indexer:

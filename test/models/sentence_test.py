@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-from ketchlip.sentence import Sentence
+from ketchlip.models.sentence import Sentence
 
 import unittest
 

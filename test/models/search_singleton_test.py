@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-from ketchlip.search_singleton import SearchSingleton
+from ketchlip.models.search_singleton import SearchSingleton
 
 import unittest
 

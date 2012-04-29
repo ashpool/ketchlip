@@ -1,8 +1,7 @@
 #-*- coding: utf-8 -*-
 
-from ketchlip import word
-
-from ketchlip.word import Word
+from ketchlip.models.word import Word
+from ketchlip.models import word
 
 __author__ = 'magnus'
 

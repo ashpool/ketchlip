@@ -3,7 +3,7 @@
 from controller_factory import ControllerFactory
 from BaseHTTPServer import BaseHTTPRequestHandler
 from utils import klogger
-from querystring import Querystring
+from ketchlip.models.querystring import Querystring
 
 class MyHandler(BaseHTTPRequestHandler):
 

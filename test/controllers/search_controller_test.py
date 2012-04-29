@@ -1,7 +1,7 @@
 import unittest
 from bs4 import BeautifulSoup
 from ketchlip.controllers.search_controller import SearchController
-from ketchlip.querystring import Querystring
+from ketchlip.models.querystring import Querystring
 
 
 class SearchControllerTest(unittest.TestCase):

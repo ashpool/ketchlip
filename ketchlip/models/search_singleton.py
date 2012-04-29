@@ -1,9 +1,9 @@
 #-*- coding: utf-8 -*-
 
 # http://stackoverflow.com/questions/42558/python-and-the-singleton-pattern
-from utils import klogger
-from utils.persister import Persister
-from query import Query
+from ketchlip.utils import klogger
+from ketchlip.utils.persister import Persister
+from ketchlip.models.query import Query
 
 class SearchSingleton(object):
 

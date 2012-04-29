@@ -1,6 +1,6 @@
 import time
 from ketchlip.controllers.base_controller import BaseController
-from ketchlip.search_singleton import SearchSingleton
+from ketchlip.models.search_singleton import SearchSingleton
 from ketchlip.utils import klogger
 
 class SearchController(BaseController):

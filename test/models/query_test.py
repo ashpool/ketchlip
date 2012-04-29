@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-from ketchlip.query import Query
+from ketchlip.models.query import Query
 
 import unittest
 
