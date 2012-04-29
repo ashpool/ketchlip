@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import re
+import HTMLParser
 from bs4 import BeautifulSoup
 import cgi
 
@@ -56,3 +57,8 @@ class KetchlipHTMLParser:
 
     def html_encode(self, text):
         return cgi.escape(text.decode('utf-8')).encode('ascii', 'xmlcharrefreplace')
+
+    def html_decode(self, text):
+        htmlparser = HTMLParser.HTMLParser()
+        return htmlparser.unescape(text.decode('utf-8')).encode('utf-8', 'xmlcharrefreplace')
+

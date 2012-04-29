@@ -69,6 +69,35 @@ class KetchlipHTMLParserTest(unittest.TestCase):
         self.assertEqual("&#246;", parser.html_encode("ö"))
         self.assertEqual("&#214;", parser.html_encode("Ö"))
 
+    def test_html_decode(self):
+        parser = KetchlipHTMLParser("")
+
+        self.assertEqual(">", parser.html_decode("&gt;"))
+        self.assertEqual("<", parser.html_decode("&lt;"))
+        self.assertEqual("å", parser.html_decode("&#229;"))
+        self.assertEqual("Å", parser.html_decode("&#197;"))
+        self.assertEqual("ä", parser.html_decode("&#228;"))
+        self.assertEqual("Ä", parser.html_decode("&#196;"))
+        self.assertEqual("ö", parser.html_decode("&#246;"))
+        self.assertEqual("Ö", parser.html_decode("&#214;"))
+
+    def test_html_decode_encode_decode(self):
+        parser = KetchlipHTMLParser("")
+
+        text = "Öku-Arne >> Tektronix CFC250 Teardown << t r o n i x    s t u f f!"
+        expected = "&#214;ku-Arne &gt;&gt; Tektronix CFC250 Teardown &lt;&lt; t r o n i x    s t u f f!"
+
+        self.assertEqual(expected, parser.html_encode(parser.html_decode(text)))
+
+        # decode(encode(decode(m))) = m
+        self.assertEqual(text, parser.html_decode(parser.html_encode(parser.html_decode(text))))
+
+    def test_decode_non_encoded_text(self):
+        parser = KetchlipHTMLParser("")
+
+        text = "Öku-Arne >> Tektronix CFC250 Teardown << t r o n i x    s t u f f!"
+        self.assertEqual(text, parser.html_decode(text))
+
     def test_parse_title(self):
         parser = KetchlipHTMLParser(self.html)
         self.assertEqual("This is the title", parser.title())
