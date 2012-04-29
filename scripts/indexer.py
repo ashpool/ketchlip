@@ -3,8 +3,8 @@ import gevent
 from gevent.queue import Queue
 from ketchlip.crawler import Crawler
 from ketchlip.indexer import Indexer
-from ketchlip.utils import klogger
-from ketchlip.utils.persister import Persister
+from ketchlip.helpers import klogger
+from ketchlip.helpers.persister import Persister
 
 def main():
     """

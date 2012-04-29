@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 import unittest
-from ketchlip.utils.ketchlip_html_parser import KetchlipHTMLParser
+from ketchlip.helpers.ketchlip_html_parser import KetchlipHTMLParser
 
 class KetchlipHTMLParserTest(unittest.TestCase):
 

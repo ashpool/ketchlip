@@ -2,7 +2,7 @@
 
 import unittest
 from nose.tools import raises
-from ketchlip.utils.persister import Persister
+from ketchlip.helpers.persister import Persister
 
 
 class PersisterTest(unittest.TestCase):

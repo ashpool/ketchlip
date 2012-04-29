@@ -5,8 +5,8 @@ import time
 import tweepy
 import codecs
 from tweepy.error import TweepError
-from ketchlip.utils import klogger
-from ketchlip.utils.persister import Persister
+from ketchlip.helpers import klogger
+from ketchlip.helpers.persister import Persister
 
 class TweetScanner():
     def get_all_links(self, text):

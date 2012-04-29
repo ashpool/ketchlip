@@ -1,8 +1,8 @@
 import ConfigParser
 import tweepy
 from ketchlip.tweet_scanner import TweetScanner
-from ketchlip.utils import klogger
-from ketchlip.utils.persister import Persister
+from ketchlip.helpers import klogger
+from ketchlip.helpers.persister import Persister
 
 def main():
     try:

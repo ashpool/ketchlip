@@ -2,7 +2,7 @@
 import urllib2
 import gevent
 import time
-from ketchlip.utils import klogger
+from ketchlip.helpers import klogger
 
 
 class Crawler:

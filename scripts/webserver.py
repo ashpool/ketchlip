@@ -1,7 +1,7 @@
 from BaseHTTPServer import HTTPServer
 import ConfigParser
 from ketchlip.models.search_singleton import SearchSingleton
-from ketchlip.utils import klogger
+from ketchlip.helpers import klogger
 from ketchlip.webserver import MyHandler
 
 def main():

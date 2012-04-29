@@ -2,8 +2,8 @@
 import re
 import gevent
 from crawler import Crawler
-from ketchlip.utils import klogger
-from ketchlip.utils.ketchlip_html_parser import KetchlipHTMLParser
+from ketchlip.helpers import klogger
+from ketchlip.helpers.ketchlip_html_parser import KetchlipHTMLParser
 from ketchlip.models.word import Word
 
 
