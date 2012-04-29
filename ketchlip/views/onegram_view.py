@@ -6,6 +6,7 @@ class OnegramView(BaseView):
 """
 <html>
     <head>
+        <title>Ketchlip</title>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript">
           google.load("visualization", "1", {packages:["corechart"]});
