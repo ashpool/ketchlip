@@ -4,9 +4,11 @@ class OnegramView(BaseView):
     def show(self):
         return \
 """
+<!DOCTYPE html>
 <html>
     <head>
         <title>Ketchlip</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript">
           google.load("visualization", "1", {packages:["corechart"]});
