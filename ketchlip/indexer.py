@@ -33,7 +33,7 @@ class Indexer:
                 greenlets.append(gevent.spawn(self.indexing, result))
 
         # make sure to join all little greenlets before continuing
-        gevent.joinall(greenlets, timeout=30, raise_error=False)
+        gevent.joinall(greenlets, timeout=30, raise_error=True)
 
         self.url_lookup = dict((v[self.URL_INDEX_POS], [k, v[self.EXPANDED_URL_POS], v[self.TITLE_POS], v[self.DESCRIPTION_POS]]) for k, v in self.lookup_url.iteritems())
         assert len(self.url_lookup) == len(self.lookup_url)
