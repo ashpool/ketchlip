@@ -54,5 +54,5 @@ class Query:
         # ['http://d.com', [10]],
         # ['http://b.com', [11, 22, 42]]]
         sorted_url_list = quicksort(url_list)
-        
+
         return [self.url_lookup[li[0]] for li in sorted_url_list]
