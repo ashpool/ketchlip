@@ -3,7 +3,7 @@
 import re
 import HTMLParser
 from bs4 import BeautifulSoup
-import cgi
+
 
 class KetchlipHTMLParser:
 
@@ -22,23 +22,39 @@ class KetchlipHTMLParser:
         soup.prettify()
         return BeautifulSoup(soup.prettify())
 
+    def content_tag(self):
+        soup = self.get_soup()
+        meta_descriptions = soup.findAll('meta', {'name':'description'})
+        for tag in meta_descriptions:
+            if tag.has_key('content'):
+                return tag
+
+    def charset(self):
+        """
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        """
+        soup = self.get_soup()
+        meta_descriptions = soup.findAll('meta', {'content':'text/html'})
+        for tag in meta_descriptions:
+            if tag.has_key('charset'):
+                print 'tag["charset"]', tag["charset"]
+                return tag["charset"].lower()
+        print 'DEFAULT', 'utf-8'
+        return 'utf-8'
+
     def title(self):
         soup = self.get_soup()
         if not soup.html or not soup.html.head or not soup.html.head.title:
             return ""
-        #return self.html_encode(soup.html.head.title.get_text().strip())
         return soup.html.head.title.get_text().strip()
 
     def description(self, max_length = None):
-        soup = self.get_soup()
-        meta_descriptions = soup.findAll('meta', {'name':'description'})
         description = ''
-        for tag in meta_descriptions:
-            if tag.has_key('content'):
-                description += tag['content']
+        tag = self.content_tag()
+        if tag and tag.has_key('content'):
+            description += tag['content']
         if max_length and len(description) > max_length:
             description = description[:max_length].strip() + " ..."
-        #return self.html_encode(description)
         return description
 
     def text(self):
@@ -54,11 +70,3 @@ class KetchlipHTMLParser:
         BeautifulSoup doesn't like malformatted tags like <scr + ipt>
         """
         return re.subn(r'<((sc.*?pt)).*?</\1>(?s)', '', html)[0]
-
-    def html_encode(self, text):
-        return cgi.escape(text.decode('utf-8')).encode('ascii', 'xmlcharrefreplace')
-
-    def html_decode(self, text):
-        htmlparser = HTMLParser.HTMLParser()
-        return htmlparser.unescape(text.decode('utf-8')).encode('utf-8', 'xmlcharrefreplace')
-
