@@ -10,8 +10,6 @@ from ketchlip.models.word import Word
 class Indexer:
 
     def __init__(self):
-        # todo idea: exclude the most frequent and the least frequent words
-        # todo exclude numbers
         self.URL_INDEX_POS = 0
         self.EXPANDED_URL_POS = 1
         self.TITLE_POS = 2
@@ -33,6 +31,9 @@ class Indexer:
 
             if result[Crawler.STATUS] == "OK":
                 greenlets.append(gevent.spawn(self.indexing, result))
+
+        # make sure to join all little greenlets before continuing
+        gevent.joinall(greenlets, timeout=30, raise_error=False)
 
         self.url_lookup = dict((v[self.URL_INDEX_POS], [k, v[self.EXPANDED_URL_POS], v[self.TITLE_POS], v[self.DESCRIPTION_POS]]) for k, v in self.lookup_url.iteritems())
         assert len(self.url_lookup) == len(self.lookup_url)
@@ -88,7 +89,6 @@ class Indexer:
 
         except Exception, e:
             klogger.exception(e)
-
 
     def add_to_index(self, index, keyword, pos, url):
         if keyword in index:
