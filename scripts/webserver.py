@@ -16,7 +16,7 @@ def main():
         WWW_ROOT = cfg.get("Files", "WWW_ROOT")
         MyHandler.set_www_root(WWW_ROOT)
 
-        SearchSingleton().load(BASE_DIR  + "/index", BASE_DIR  + "/url_lookup")
+        SearchSingleton().load(BASE_DIR  + "index", BASE_DIR  + "url_lookup")
         server = HTTPServer(('', PORT), MyHandler)
         klogger.info("HTTP server ready to serve on port " + str(PORT))
         server.serve_forever()
