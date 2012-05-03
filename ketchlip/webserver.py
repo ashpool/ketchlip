@@ -17,6 +17,7 @@ class MyHandler(BaseHTTPRequestHandler):
     def set_www_root(cls, value):
         cls._www_root = value
 
+    # todo refactor write-methods
     def write_js(self):
         f = open(MyHandler.get_www_root() + self.path)
         self.send_response(200)
@@ -43,8 +44,18 @@ class MyHandler(BaseHTTPRequestHandler):
         self.wfile.write(f.read())
         f.close()
 
-    def write_page(self, page, qs):
+    def write_favicon(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'image/x-icon')
+        self.send_header('Cache-control', 'no-cache')
+        self.send_header('Pragma', 'no-cache')
+        self.end_headers()
+        f = open(MyHandler.get_www_root() + self.path)
+        self.wfile.write(f.read())
+        f.close()
 
+
+    def write_page(self, page, qs):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
@@ -60,7 +71,9 @@ class MyHandler(BaseHTTPRequestHandler):
 
             qs = Querystring(self.path)
             page = qs.page()
-            if self.path.endswith(".png"):
+            if self.path.endswith("favicon.ico"):
+                self.write_favicon()
+            elif self.path.endswith(".png"):
                 self.write_png()
             elif self.path.endswith(".css"):
                 self.write_css()

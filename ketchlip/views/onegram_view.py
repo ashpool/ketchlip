@@ -9,6 +9,7 @@ class OnegramView(BaseView):
     <head>
         <title>Ketchlip</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="/images/favicon.ico" rel="icon" type="image/x-icon" />
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript">
           google.load("visualization", "1", {packages:["corechart"]});
