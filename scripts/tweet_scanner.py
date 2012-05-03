@@ -1,5 +1,6 @@
 import ConfigParser
 import tweepy
+from ketchlip.helpers.config import Config
 from ketchlip.tweet_scanner import TweetScanner
 from ketchlip.helpers import klogger
 from ketchlip.helpers.persister import Persister
@@ -16,18 +17,24 @@ def main():
 
         BASE_DIR = cfg.get("Files", "BASE_DIR")
 
+        config = Config()
+        config.base_dir = BASE_DIR
+        config.tweet_file = "tweets.txt"
+        config.last_status_processed_file = "last_status_processed.txt"
+
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
         api = tweepy.API(auth)
 
+        # todo inline into tweet scanner
         last_status_processed = Persister(BASE_DIR + "/last_status_processed.txt").load()
 
         klogger.info("Scanning " + api.me().name + " friends timeline")
         klogger.info("Base directory " + str(BASE_DIR))
         klogger.info("Last status processed " + str(last_status_processed))
 
-        TweetScanner().run_scan(api, last_status_processed = last_status_processed, base_dir = BASE_DIR)
+        TweetScanner(config).run_scan(api, last_status_processed = last_status_processed)
 
     except KeyboardInterrupt:
         klogger.info('^C received, shutting down tweet scanner')
