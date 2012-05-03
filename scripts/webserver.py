@@ -1,7 +1,7 @@
 from BaseHTTPServer import HTTPServer
 import ConfigParser
 from ketchlip.models.search_singleton import SearchSingleton
-from ketchlip.helpers import klogger
+from ketchlip.helpers import klogger, config
 from ketchlip.webserver import MyHandler
 
 def main():
@@ -9,14 +9,9 @@ def main():
     try:
         klogger.info("Warming up...")
 
-        cfg = ConfigParser.ConfigParser()
-        cfg.read("./ketchlip.cfg")
+        MyHandler.set_www_root(config.config.www_root)
 
-        BASE_DIR = cfg.get("Files", "BASE_DIR")
-        WWW_ROOT = cfg.get("Files", "WWW_ROOT")
-        MyHandler.set_www_root(WWW_ROOT)
-
-        SearchSingleton().load(BASE_DIR  + "index", BASE_DIR  + "url_lookup")
+        SearchSingleton().load(config.config.base_dir + "index", config.config.base_dir + "url_lookup")
         server = HTTPServer(('', PORT), MyHandler)
         klogger.info("HTTP server ready to serve on port " + str(PORT))
         server.serve_forever()

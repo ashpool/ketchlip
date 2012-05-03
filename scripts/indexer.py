@@ -3,7 +3,7 @@ import gevent
 from gevent.queue import Queue
 from ketchlip.crawler import Crawler
 from ketchlip.indexer import Indexer
-from ketchlip.helpers import klogger
+from ketchlip.helpers import klogger, config
 from ketchlip.helpers.persister import Persister
 
 def main():
@@ -18,17 +18,14 @@ def main():
         input_queue = Queue()
         output_queue = Queue()
 
-        cfg = ConfigParser.ConfigParser()
-        cfg.read("./ketchlip.cfg")
+        base_dir = config.config.base_dir
 
-        BASE_DIR = cfg.get("Files", "BASE_DIR")
-
-        tweetfile = BASE_DIR + "tweets.txt" # timestamp \t url
-        indexfile = BASE_DIR + "index"
-        graphfile = BASE_DIR + "graph"
-        url_lookupfile = BASE_DIR + "url_lookup"
-        lookup_urlfile = BASE_DIR + "lookup_url"
-        since_file = BASE_DIR + "since"
+        tweetfile = base_dir + "tweets.txt" # timestamp \t url
+        indexfile = base_dir + "index"
+        graphfile = base_dir + "graph"
+        url_lookupfile = base_dir + "url_lookup"
+        lookup_urlfile = base_dir + "lookup_url"
+        since_file = base_dir + "since"
 
         index_persister = Persister(indexfile)
         graph_persister = Persister(graphfile)

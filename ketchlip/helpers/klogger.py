@@ -1,12 +1,12 @@
 #-*- coding: utf-8 -*-
 
 import logging
+from ketchlip.helpers import config
 
 logger = logging.getLogger('ketchlip')
 logger.setLevel(logging.DEBUG)
 
-# todo make logfile location configurable
-fh = logging.FileHandler('/tmp/ketchlip.log')
+fh = logging.FileHandler(config.config.log_dir + "ketchlip.log")
 fh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
