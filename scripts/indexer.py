@@ -23,12 +23,12 @@ def main():
 
         BASE_DIR = cfg.get("Files", "BASE_DIR")
 
-        tweetfile = BASE_DIR + "/tweets.txt" # timestamp \t url
-        indexfile = BASE_DIR + "/index"
-        graphfile = BASE_DIR + "/graph"
-        url_lookupfile = BASE_DIR + "/url_lookup"
-        lookup_urlfile = BASE_DIR + "/lookup_url"
-        since_file = BASE_DIR + "/since"
+        tweetfile = BASE_DIR + "tweets.txt" # timestamp \t url
+        indexfile = BASE_DIR + "index"
+        graphfile = BASE_DIR + "graph"
+        url_lookupfile = BASE_DIR + "url_lookup"
+        lookup_urlfile = BASE_DIR + "lookup_url"
+        since_file = BASE_DIR + "since"
 
         index_persister = Persister(indexfile)
         graph_persister = Persister(graphfile)
