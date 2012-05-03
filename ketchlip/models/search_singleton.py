@@ -5,6 +5,7 @@ from ketchlip.helpers import klogger
 from ketchlip.helpers.persister import Persister
 from ketchlip.models.query import Query
 
+# todo reload index when changed
 class SearchSingleton(object):
 
     _instance = None
@@ -23,4 +24,5 @@ class SearchSingleton(object):
 
     def query(self, question):
         return Query(self.index, self.url_lookup).multi_lookup(question)
+
 

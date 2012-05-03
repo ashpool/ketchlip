@@ -17,7 +17,6 @@ class MyHandler(BaseHTTPRequestHandler):
     def set_www_root(cls, value):
         cls._www_root = value
 
-    # todo refactor write-methods
     def write_file(self, content_type):
         f = open(MyHandler.get_www_root() + self.path)
         self.send_response(200)
