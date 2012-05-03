@@ -2,7 +2,6 @@ import tweepy
 from ketchlip.helpers.config import Config
 from ketchlip.tweet_scanner import TweetScanner
 from ketchlip.helpers import klogger, config
-from ketchlip.helpers.persister import Persister
 
 def main():
     try:
@@ -23,14 +22,9 @@ def main():
 
         api = tweepy.API(auth)
 
-        # todo inline into tweet scanner
-        last_status_processed = Persister(base_dir + "/last_status_processed.txt").load()
-
         klogger.info("Scanning " + api.me().name + " friends timeline")
-        klogger.info("Base directory " + str(base_dir))
-        klogger.info("Last status processed " + str(last_status_processed))
 
-        TweetScanner(conf).run_scan(api, last_status_processed = last_status_processed)
+        TweetScanner(conf).run_scan(api)
 
     except KeyboardInterrupt:
         klogger.info('^C received, shutting down tweet scanner')

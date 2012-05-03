@@ -65,7 +65,12 @@ class TweetScanner():
     def persist_last_status_processed(self, last_status_processed):
         Persister(self.base_dir + self.last_status_processed_file).save(last_status_processed)
 
-    def run_scan(self, api, last_status_processed, try_count = 0):
+    def load_last_status_processed(self):
+        return Persister(self.base_dir + self.last_status_processed_file).load()
+
+    def run_scan(self, api, try_count = 0):
+        last_status_processed = self.load_last_status_processed()
+
         if try_count > 10:
             klogger.error("Max retries reached")
             return
