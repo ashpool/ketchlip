@@ -5,6 +5,7 @@ import logging
 logger = logging.getLogger('ketchlip')
 logger.setLevel(logging.DEBUG)
 
+# todo make logfile location configurable
 fh = logging.FileHandler('/tmp/ketchlip.log')
 fh.setLevel(logging.DEBUG)
 
