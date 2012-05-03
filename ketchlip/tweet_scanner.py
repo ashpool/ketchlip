@@ -9,6 +9,12 @@ from ketchlip.helpers import klogger
 from ketchlip.helpers.persister import Persister
 
 class TweetScanner():
+
+    def __init__(self, config):
+        self.base_dir = config.base_dir
+        self.tweet_file = config.tweet_file
+        self.last_status_processed_file = config.last_status_processed_file
+
     def get_all_links(self, text):
         links = []
         pattern = r"((https?):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)"
@@ -20,7 +26,7 @@ class TweetScanner():
                 links.append(link[0])
         return links
 
-    def scan(self, api, last_status_processed = None, base_dir = "/tmp"):
+    def scan(self, api, last_status_processed = None):
         BATCH_SIZE = 5
         tweets = []
 
@@ -41,25 +47,33 @@ class TweetScanner():
 
                         if len(tweets) > BATCH_SIZE:
                             klogger.info("Writing tweets to file")
-                            f = codecs.open(base_dir + "/tweets.txt", "a", "utf-8")
-                            for tweet in tweets:
-                                f.write(str(time.time()) + "\t" + tweet + "\n")
-                            f.close()
-                            Persister(base_dir + "/last_status_processed.txt").save(last_status_processed)
-                            tweets = []
+                            tweets = self.persist(tweets, last_status_processed)
 
             time.sleep(60)
 
-    def run_scan(self, api, last_status_processed, base_dir, try_count = 0):
+    def persist(self, tweets, last_status_processed):
+        self.persist_tweets(tweets)
+        self.persist_last_status_processed(last_status_processed)
+        return []
+
+    def persist_tweets(self, tweets):
+        f = codecs.open(self.base_dir + self.tweet_file, "a", "utf-8")
+        for tweet in tweets:
+            f.write(str(time.time()) + "\t" + tweet + "\n")
+        f.close()
+
+    def persist_last_status_processed(self, last_status_processed):
+        Persister(self.base_dir + self.last_status_processed_file).save(last_status_processed)
+
+    def run_scan(self, api, last_status_processed, try_count = 0):
         if try_count > 10:
             klogger.error("Max retries reached")
             return
-
         try:
-            self.scan(api, last_status_processed = last_status_processed, base_dir = base_dir)
+            self.scan(api, last_status_processed = last_status_processed)
         except TweepError, e:
             klogger.error(e)
         finally:
             time.sleep(30)
-            self.run_scan(api, last_status_processed, base_dir, try_count + 1)
+            self.run_scan(api, last_status_processed, try_count + 1)
 
