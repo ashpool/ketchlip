@@ -5,11 +5,6 @@ from ketchlip.helpers import klogger, config
 
 def main():
     try:
-        CONSUMER_KEY = config.config.consumer_key
-        CONSUMER_SECRET = config.config.consumer_secret
-        ACCESS_TOKEN = config.config.access_token
-        ACCESS_TOKEN_SECRET = config.config.access_token_secret
-
         base_dir = config.config.base_dir
 
         conf = Config()
@@ -17,8 +12,8 @@ def main():
         conf.tweet_file = "tweets.txt"
         conf.last_status_processed_file = "last_status_processed.txt"
 
-        auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        auth = tweepy.OAuthHandler(config.config.consumer_key, config.config.consumer_secret)
+        auth.set_access_token(config.config.access_token, config.config.access_token_secret)
 
         api = tweepy.API(auth)
 
