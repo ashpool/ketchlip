@@ -16,3 +16,10 @@ ACCESS_TOKEN_SECRET:
 BASE_DIR = ./files/
 # Webserver will serve content from this directory
 WWW_ROOT = ./www/
+# ketchlip.log will be written here
+LOG_DIR = ./logs/
+
+
+[Test]
+# For testing purposes - don't delete
+TEST_PROPERTY = ignore_this
