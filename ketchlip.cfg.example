@@ -13,6 +13,6 @@ ACCESS_TOKEN_SECRET:
 
 [Files]
 # TweetScanner, Indexer will save their files in this directory.
-BASE_DIR = ./files
+BASE_DIR = ./files/
 # Webserver will serve content from this directory
-WWW_ROOT = ./www
+WWW_ROOT = ./www/
