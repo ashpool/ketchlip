@@ -25,4 +25,8 @@ class SearchSingleton(object):
     def query(self, question):
         return Query(self.index, self.url_lookup).multi_lookup(question)
 
+    def notify(self, message):
+        klogger.info(message)
+        self.load(self.index_file, self.url_lookup_file)
+
 
