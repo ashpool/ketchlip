@@ -1,4 +1,3 @@
-import ConfigParser
 import gevent
 from gevent.queue import Queue
 from ketchlip.crawler import Crawler
@@ -15,6 +14,8 @@ def main():
     * url_lookupfile: dictionary containing url ids - {url_id: url}
     """
     try:
+        klogger.logger = klogger.get_logger("ketchlip", "indexer.log")
+
         input_queue = Queue()
         output_queue = Queue()
 

@@ -6,6 +6,7 @@ from ketchlip.helpers import klogger
 from ketchlip.helpers.ketchlip_html_parser import KetchlipHTMLParser
 from ketchlip.models.word import Word
 
+logger = klogger.get_module_logger(__name__)
 
 class Indexer:
 
@@ -48,9 +49,9 @@ class Indexer:
             url = result[Crawler.URL].strip()
 
             if url in self.lookup_url:
-                klogger.info("Already crawled " + url)
+                logger.info("Already crawled " + url)
                 return
-            klogger.info("Indexing " + url)
+            logger.info("Indexing " + url)
 
             parser = KetchlipHTMLParser(result[Crawler.CONTENT])
             title = parser.title()
@@ -67,10 +68,7 @@ class Indexer:
                 self.graph[url] = result[Crawler.LINKS]
 
         except Exception, e:
-            klogger.info("ERROR")
-            klogger.info(result[Crawler.URL])
-            klogger.info(result[Crawler.EXPANDED_URL])
-            klogger.exception(e)
+            logger.exception(e)
 
     def add_page_to_index(self, index, url, content):
         """
@@ -88,7 +86,7 @@ class Indexer:
                         pos += 1
 
         except Exception, e:
-            klogger.exception(e)
+            logger.exception(e)
 
     def add_to_index(self, index, keyword, pos, url):
         if keyword in index:

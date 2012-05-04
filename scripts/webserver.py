@@ -1,5 +1,4 @@
 from BaseHTTPServer import HTTPServer
-import ConfigParser
 from ketchlip.helpers.file_observer import FileObserver
 from ketchlip.models.search_singleton import SearchSingleton
 from ketchlip.helpers import klogger, config
@@ -8,6 +7,8 @@ from ketchlip.webserver import MyHandler
 def main():
     PORT = 80 # you may have to sudo or be su to use port 80
     try:
+        klogger.logger = klogger.get_logger("ketchlip", "webserver.log")
+
         klogger.info("Warming up...")
 
         MyHandler.set_www_root(config.config.www_root)

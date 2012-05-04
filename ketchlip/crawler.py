@@ -4,6 +4,7 @@ import gevent
 import time
 from ketchlip.helpers import klogger
 
+logger = klogger.get_module_logger(__name__)
 
 class Crawler:
     URL = "URL"
@@ -24,7 +25,7 @@ class Crawler:
             if result:
                 output_queue.put_nowait(result)
             elapsed = (time.time() - start)
-            klogger.info("Crawler " + name + " crawled " + url + " in " + str(elapsed) + " seconds")
+            logger.info("Crawler " + name + " crawled " + url + " in " + str(elapsed) + " seconds")
 
     def crawl(self, url):
         result = {Crawler.URL: url.strip(), Crawler.STATUS: "FAILED"}
@@ -48,7 +49,7 @@ class Crawler:
 
             return html, expanded_url
         except urllib2.HTTPError, e:
-            klogger.info(e)
+            logger.info(e)
         except Exception, e:
-            klogger.exception(e)
+            logger.exception(e)
         return None, None

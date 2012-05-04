@@ -8,6 +8,8 @@ from tweepy.error import TweepError
 from ketchlip.helpers import klogger
 from ketchlip.helpers.persister import Persister
 
+logger = klogger.get_module_logger(__name__)
+
 class TweetScanner():
 
     def __init__(self, config):
@@ -22,7 +24,7 @@ class TweetScanner():
         result = expression.findall(text)
         if result:
             for link in result:
-                klogger.info("FETCH: " + text)
+                logger.info("FETCH: " + text)
                 links.append(link[0])
         return links
 
@@ -46,7 +48,7 @@ class TweetScanner():
                         tweets.append(link)
 
                         if len(tweets) > BATCH_SIZE:
-                            klogger.info("Writing tweets to file")
+                            logger.info("Writing tweets to file")
                             tweets = self.persist(tweets, last_status_processed)
 
             time.sleep(60)
@@ -72,12 +74,12 @@ class TweetScanner():
         last_status_processed = self.load_last_status_processed()
 
         if try_count > 10:
-            klogger.error("Max retries reached")
+            logger.error("Max retries reached")
             return
         try:
             self.scan(api, last_status_processed = last_status_processed)
         except TweepError, e:
-            klogger.error(e)
+            logger.error(e)
         finally:
             time.sleep(30)
             self.run_scan(api, last_status_processed, try_count + 1)

@@ -5,6 +5,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 from helpers import klogger
 from ketchlip.models.querystring import Querystring
 
+logger = klogger.get_module_logger(__name__)
+
 class MyHandler(BaseHTTPRequestHandler):
 
     _www_root = 5
@@ -51,7 +53,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            klogger.info("GET " + self.path)
+            logger.info("GET " + self.path)
 
             qs = Querystring(self.path)
             page = qs.page()

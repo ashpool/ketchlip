@@ -5,6 +5,8 @@ from ketchlip.helpers import klogger, config
 
 def main():
     try:
+        klogger.logger = klogger.get_logger("ketchlip", "tweet_scanner.log")
+
         base_dir = config.config.base_dir
 
         conf = Config()

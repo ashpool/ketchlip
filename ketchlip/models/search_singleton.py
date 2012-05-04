@@ -5,7 +5,8 @@ from ketchlip.helpers import klogger
 from ketchlip.helpers.persister import Persister
 from ketchlip.models.query import Query
 
-# todo reload index when changed
+logger = klogger.get_module_logger(__name__)
+
 class SearchSingleton(object):
 
     _instance = None
@@ -19,14 +20,14 @@ class SearchSingleton(object):
     def load(self, index_file, url_lookup_file):
         self.index = Persister(index_file).load()
         self.url_lookup = Persister(url_lookup_file).load()
-        klogger.info("Index length " + str(len(self.index)))
-        klogger.info("URL lookup length " + str(len(self.url_lookup)))
+        logger.info("Index length " + str(len(self.index)))
+        logger.info("URL lookup length " + str(len(self.url_lookup)))
 
     def query(self, question):
         return Query(self.index, self.url_lookup).multi_lookup(question)
 
     def notify(self, message):
-        klogger.info(message)
+        logger.info(message)
         self.load(self.index_file, self.url_lookup_file)
 
 

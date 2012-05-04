@@ -1,7 +1,6 @@
 import time
 from ketchlip.controllers.base_controller import BaseController
 from ketchlip.models.search_singleton import SearchSingleton
-from ketchlip.helpers import klogger
 
 class SearchController(BaseController):
 
@@ -15,7 +14,6 @@ class SearchController(BaseController):
         query = query_string.get_values("search")
         for i in range(len(query)):
             query[i] = query[i].lower()
-        klogger.info("QUERY " + str(query))
         x = time.time()
         results = self.get_search_singleton().query(query)
         search_time_ms = (time.time() - x) * 1000.0
