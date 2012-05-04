@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 import re
 import gevent
+import time
 from crawler import Crawler
 from ketchlip.helpers import klogger
 from ketchlip.helpers.ketchlip_html_parser import KetchlipHTMLParser
@@ -23,21 +24,24 @@ class Indexer:
     def gevent_index(self, input_queue, result_queue):
         greenlets = []
         while not input_queue.empty() or not result_queue.empty():
-            if len(greenlets) > 30:
-                klogger.info("Joining greenlets")
+            if len(greenlets) > 20:
+                logger.info("Joining indexer greenlets")
                 gevent.joinall(greenlets, timeout=30, raise_error=False)
                 greenlets = []
 
             result = result_queue.get(timeout=15) # the crawlers should be able to produce output below this threshold
 
             if result[Crawler.STATUS] == "OK":
-                greenlets.append(gevent.spawn(self.indexing, result))
+                greenlets.append(gevent.spawn(Indexer().indexing, result))
 
         # make sure to join all little greenlets before continuing
         gevent.joinall(greenlets, timeout=30, raise_error=True)
+        logger.info("All greenlets done")
 
         self.url_lookup = dict((v[self.URL_INDEX_POS], [k, v[self.EXPANDED_URL_POS], v[self.TITLE_POS], v[self.DESCRIPTION_POS]]) for k, v in self.lookup_url.iteritems())
         assert len(self.url_lookup) == len(self.lookup_url)
+        logger.info("Indexing done")
+
         self.done = True
 
     def indexing(self, result):
@@ -45,13 +49,13 @@ class Indexer:
         result => {Crawler.CONTENT:html, Crawler.URL:http://.., Crawler.EXPANDED_URL:http://.., Crawler.LINKS:[]}
         """
         try:
+            start = time.time()
             DESCRIPTION_MAX_LENGTH = 260
             url = result[Crawler.URL].strip()
 
             if url in self.lookup_url:
-                logger.info("Already crawled " + url)
+                logger.info("Already indexed " + url)
                 return
-            logger.info("Indexing " + url)
 
             parser = KetchlipHTMLParser(result[Crawler.CONTENT])
             title = parser.title()
@@ -66,6 +70,9 @@ class Indexer:
 
             if Crawler.LINKS in result:
                 self.graph[url] = result[Crawler.LINKS]
+
+            elapsed = (time.time() - start)
+            logger.info("Indexed " + url + " in " + "%.2f" % round(elapsed, 2) + " seconds")
 
         except Exception, e:
             logger.exception(e)

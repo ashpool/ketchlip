@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+from Queue import Queue
 
 import unittest
 import urllib2
@@ -77,30 +78,4 @@ class IndexerTest(unittest.TestCase):
         self.assertEqual(html, resp.read())
         self.assertEqual(url, resp.url)
 
-    def test_crawl(self):
 
-        html = \
-        """<html>
-            <head>
-                <title>Python is fun!</title>
-            </head>
-            <body>
-                <div>Python is similar to Ruby, but different.</div>
-            </body>
-        </html>"""
-
-        response_mock = Mock(url="http://expanded_url.com")
-        response_mock.read = Mock(return_value=html)
-        urllib2.urlopen = Mock(return_value=response_mock)
-        url = "http://a.com"
-
-        crawler = Crawler()
-
-        result = crawler.crawl(url)
-
-        expected_result = {'CONTENT': html,
-                           'EXPANDED_URL': 'http://expanded_url.com',
-                           'STATUS': 'OK',
-                           'URL': 'http://a.com'}
-
-        self.assertEqual(expected_result, result)

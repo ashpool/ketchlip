@@ -63,18 +63,10 @@ def main():
 
         klogger.info("Including: " + str(include_count) + " Excluding: " + str(exclude_count))
 
-
-        # Spawn off multiple crawlers and one indexer
+        # Spawn off crawler and indexer
         gevent.joinall([
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue,  "A"),
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "B"),
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "C"),
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "D"),
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "E"),
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "F"),
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "G"),
-            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue, "H"),
-            gevent.spawn_later(30, indexer.gevent_index, input_queue, output_queue)
+            gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue),
+            gevent.spawn_later(10, indexer.gevent_index, input_queue, output_queue)
         ])
 
         if not indexer.done:

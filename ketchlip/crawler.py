@@ -15,19 +15,23 @@ class Crawler:
     CONTENT = "CONTENT"
     STATUS = "STATUS" # OK or FAILED
 
-    def gevent_crawl(self, input_queue, output_queue, name):
+    def gevent_crawl(self, input_queue, output_queue):
+        greenlets = []
         while not input_queue.empty():
-            start = time.time()
-            url = input_queue.get_nowait()
+            if len(greenlets) > 20:
+                klogger.info("Joining crawler greenlets")
+                gevent.joinall(greenlets, timeout=30, raise_error=False)
+                greenlets = []
 
-            gevent.sleep(0)
-            result = self.crawl(url)
-            if result:
-                output_queue.put_nowait(result)
-            elapsed = (time.time() - start)
-            logger.info("Crawler " + name + " crawled " + url + " in " + str(elapsed) + " seconds")
+            greenlets.append(gevent.spawn(Crawler().crawl, input_queue, output_queue))
 
-    def crawl(self, url):
+        # make sure to join all little greenlets before continuing
+        gevent.joinall(greenlets, timeout=30, raise_error=True)
+
+    def crawl(self, input_queue, output_queue):
+        start = time.time()
+        url = input_queue.get()
+
         result = {Crawler.URL: url.strip(), Crawler.STATUS: "FAILED"}
 
         content, expanded_url = self.get_page(url)
@@ -36,14 +40,17 @@ class Crawler:
             result[Crawler.CONTENT] = content.strip()
             result[Crawler.STATUS] = "OK"
 
-        return result
+        if result:
+            output_queue.put(result)
+        elapsed = (time.time() - start)
+        logger.info("Crawled " + url + " in " + "%.2f" % round(elapsed, 2) + " seconds")
 
     def get_page(self,  url):
         """
         Opens the url and return its content and expanded url.
         """
         try:
-            response = urllib2.urlopen(url) # this is blocking, probably http://t.co/ does not allow more than one browser
+            response = urllib2.urlopen(url)
             html = response.read()
             expanded_url = response.url
 
