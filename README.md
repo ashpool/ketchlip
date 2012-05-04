@@ -46,4 +46,7 @@ Run all tests with coverage report:
 
 > run_tests
 
+## Daemons and Agents on OS X
+The .plist files in /osx folder contains daemons for webserver and tweet_scanner and agent ("hourly cron job") for indexer.
+
 
