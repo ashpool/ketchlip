@@ -9,6 +9,10 @@ from ketchlip.models.word import Word
 
 logger = klogger.get_module_logger(__name__)
 
+# todo ignore all links on a page
+# todo introduce lexicon? {word:word_id}
+
+
 class Indexer:
 
     def __init__(self):
