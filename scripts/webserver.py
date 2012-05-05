@@ -4,12 +4,14 @@ from ketchlip.models.search_singleton import SearchSingleton
 from ketchlip.helpers import klogger, config
 from ketchlip.webserver import MyHandler
 
+PORT = 80 # you may have to sudo or be su to use port 80
+
+
 def main():
-    PORT = 80 # you may have to sudo or be su to use port 80
     try:
         klogger.logger = klogger.get_logger("ketchlip", "webserver.log")
 
-        klogger.info("Warming up...")
+        klogger.info("Starting webserver on port " + str(PORT))
 
         MyHandler.set_www_root(config.config.www_root)
         index_file, url_lookup_file = config.config.base_dir + "index", config.config.base_dir + "url_lookup"
@@ -24,9 +26,12 @@ def main():
         server.serve_forever()
     except KeyboardInterrupt:
         klogger.info('^C received, shutting down server')
+        if file_observer:
+            file_observer.unregister_listener(SearchSingleton())
+            file_observer.stop_observe()
         if server:
             server.socket.close()
-        file_observer.stop_observe()
+
 
 if __name__ == '__main__':
     main()

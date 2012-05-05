@@ -1,2 +1,32 @@
 #!/bin/sh
-python -c 'from scripts import webserver; webserver.main()'
+# Argument = -p port
+
+usage()
+{
+cat << EOF
+
+Usage: $0 <options>
+
+This script will start the ketchlip webserver on a given port (default 80).
+
+OPTIONS:
+    -p PORT     Set port number
+    -h          Show this!
+
+EOF
+}
+
+PORT=80
+while getopts ":p:h" opt; do
+  case $opt in
+    p)
+      PORT=$OPTARG
+      ;;
+    h)
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+python -c "from scripts import webserver;webserver.PORT=${PORT};webserver.main()"
