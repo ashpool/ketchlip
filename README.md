@@ -50,3 +50,5 @@ Run all tests with coverage report:
 The .plist files in /osx folder contains daemons for webserver and tweet_scanner and agent ("hourly cron job") for indexer.
 
 
+##References
+* The Anatomy of a Large-Scale Hypertextual Web Search Engine [Sergey Brin, Lawrence Page] http://ilpubs.stanford.edu:8090/361/1/1998-8.pdf
