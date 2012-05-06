@@ -5,9 +5,9 @@
         <key>Label</key>
         <string>com.ketchlip.indexer</string>
         <key>WorkingDirectory</key>
-        <string>/Users/magnus/src/ketchlip</string>
+        <string>/opt/ketchlip</string>
         <key>Program</key>
-        <string>/Users/magnus/src/ketchlip/run_indexer</string>
+        <string>/opt/ketchlip/run_indexer</string>
         <key>RunAtLoad</key>
         <true/>
         <key>StartInterval</key>

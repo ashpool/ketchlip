@@ -5,9 +5,9 @@
         <key>Label</key>
         <string>com.ketchlip.tweet_scanner</string>
         <key>WorkingDirectory</key>
-        <string>/Users/magnus/src/ketchlip</string>
+        <string>/opt/ketchlip</string>
         <key>Program</key>
-        <string>/Users/magnus/src/ketchlip/run_tweet_scanner</string>
+        <string>/opt/ketchlip/run_tweet_scanner</string>
         <key>RunAtLoad</key>
         <true/>
         <key>KeepAlive</key>
