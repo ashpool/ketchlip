@@ -20,7 +20,7 @@ def test_notify():
     FILE.close()
 
     file_observer = FileObserver(file_path)
-    file_observer.TIMEOUT = 0
+    file_observer.POLLING_FREQUENCY_IN_SECONDS = 0
     file_observer.GRACE_TIME_IN_SECONDS = 0
     listener = Listener()
 
@@ -49,7 +49,7 @@ def test_should_wait_to_notify_until_file_is_closed():
         # FileObserver will observe file for changes
         file_observer = FileObserver(file_path)
         # For speediness we want to keep the timeouts as short as possible
-        file_observer.TIMEOUT = 0
+        file_observer.POLLING_FREQUENCY_IN_SECONDS = 0
         file_observer.GRACE_TIME_IN_SECONDS = 1
 
         # Listener will get noticed by FileObserver when file is updated

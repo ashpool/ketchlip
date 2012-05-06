@@ -11,7 +11,7 @@ class FileObserver():
         self.last_st_mtime = os.stat(self.file_path).st_mtime
         self.run = True
         # Polling frequency in seconds
-        self.TIMEOUT = 30 # todo rename POLLING_FREQUENCY_IN_SECONDS
+        self.POLLING_FREQUENCY_IN_SECONDS = 30
         # Safe measure to avoid reading from a file that is being updated
         self.GRACE_TIME_IN_SECONDS = 240
 
@@ -30,7 +30,7 @@ class FileObserver():
             if st_mtime - self.GRACE_TIME_IN_SECONDS > self.last_st_mtime:
                 self.notify_listeners("file changed")
                 self.last_st_mtime = st_mtime + self.GRACE_TIME_IN_SECONDS
-            time.sleep(self.TIMEOUT)
+            time.sleep(self.POLLING_FREQUENCY_IN_SECONDS)
 
     def register_listener(self, observer):
         self.listeners.append(observer)
