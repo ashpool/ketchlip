@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+import shutil
 
 try:
     import cPickle as pickle
@@ -15,10 +16,16 @@ class Persister:
     def save(self, object):
         """
         Serializes an object and store it in a compressed file.
+
+        Pickling large objects can take a long time, so as
+        a safety measure, the file is written to a temporary file
+        and when done, it is moved to 'path'.
         """
-        file = gzip.GzipFile(self.path, 'wb')
-        file.write(pickle.dumps(object, 1))
+        temp_path = self.path + "_tmp"
+        file = gzip.GzipFile(temp_path, 'wb')
+        file.write(pickle.dumps(object,  protocol=2))
         file.close()
+        shutil.move(temp_path, self.path)
 
     def load(self, default_return = None):
         """

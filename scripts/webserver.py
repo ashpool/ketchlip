@@ -31,6 +31,8 @@ def main():
             file_observer.stop_observe()
         if server:
             server.socket.close()
+    except Exception, e:
+        klogger.exception(e)
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ class FileObserver():
         # Polling frequency in seconds
         self.TIMEOUT = 30 # todo rename POLLING_FREQUENCY_IN_SECONDS
         # Safe measure to avoid reading from a file that is being updated
-        self.GRACE_TIME_IN_SECONDS = 120
+        self.GRACE_TIME_IN_SECONDS = 240
 
     def start_observe(self):
         self.t = Thread(target=self.observe)

@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+from HTMLParser import HTMLParseError
 import re
 import gevent
 import time
@@ -11,7 +12,6 @@ logger = klogger.get_module_logger(__name__)
 
 # todo ignore all links on a page
 # todo introduce lexicon? {word:word_id}
-
 
 class Indexer:
 
@@ -26,27 +26,41 @@ class Indexer:
         self.done = False
 
     def gevent_index(self, input_queue, result_queue):
-        greenlets = []
-        while not input_queue.empty() or not result_queue.empty():
-            if len(greenlets) > 20:
-                logger.info("Joining indexer greenlets")
-                gevent.joinall(greenlets, timeout=30, raise_error=False)
-                greenlets = []
+        try:
+            logger.info("Starting indexing")
+            greenlets = []
+            logger.info("Input " + str(not input_queue.empty()))
+            logger.info("Result " + str(not result_queue.empty()))
 
-            result = result_queue.get(timeout=15) # the crawlers should be able to produce output below this threshold
+            while not input_queue.empty() or not result_queue.empty():
+                if len(greenlets) >= 10:
+                    logger.info("Joining indexer greenlets")
+                    gevent.joinall(greenlets, timeout=30, raise_error=False)
+                    greenlets = []
+                    logger.info("Indexers joined")
+                    gevent.sleep(0)
 
-            if result[Crawler.STATUS] == "OK":
-                greenlets.append(gevent.spawn(Indexer().indexing, result))
+                result = result_queue.get(timeout = 10) # the crawlers should be able to produce output below this threshold
 
-        # make sure to join all little greenlets before continuing
-        gevent.joinall(greenlets, timeout=30, raise_error=True)
-        logger.info("All greenlets done")
+                if result[Crawler.STATUS] == "OK":
+                    greenlets.append(gevent.spawn(self.indexing, result))
 
-        self.url_lookup = dict((v[self.URL_INDEX_POS], [k, v[self.EXPANDED_URL_POS], v[self.TITLE_POS], v[self.DESCRIPTION_POS]]) for k, v in self.lookup_url.iteritems())
-        assert len(self.url_lookup) == len(self.lookup_url)
-        logger.info("Indexing done")
+            # make sure to join all little greenlets before continuing
+            gevent.joinall(greenlets, timeout=30, raise_error=False)
+            logger.info("All greenlets done")
 
-        self.done = True
+            self.url_lookup = dict((v[self.URL_INDEX_POS], [k, v[self.EXPANDED_URL_POS], v[self.TITLE_POS], v[self.DESCRIPTION_POS]]) for k, v in self.lookup_url.iteritems())
+            logger.info("len(self.url_lookup)" + str(len(self.url_lookup)))
+            logger.info("len(self.lookup_url)" + str(len(self.lookup_url)))
+
+            assert len(self.url_lookup) == len(self.lookup_url)
+            logger.info("Indexing done")
+
+            self.done = True
+        except Exception, e:
+            self.done = False
+            logger.exception(e)
+
 
     def indexing(self, result):
         """
@@ -77,9 +91,11 @@ class Indexer:
 
             elapsed = (time.time() - start)
             logger.info("Indexed " + url + " in " + "%.2f" % round(elapsed, 2) + " seconds")
-
+            gevent.sleep(0)
+        except HTMLParseError, e:
+            logger.info("Failed to parse HTML")
         except Exception, e:
-            logger.exception(e)
+            logger.error(e)
 
     def add_page_to_index(self, index, url, content):
         """

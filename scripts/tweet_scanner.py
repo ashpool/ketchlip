@@ -25,7 +25,8 @@ def main():
 
     except KeyboardInterrupt:
         klogger.info('^C received, shutting down tweet scanner')
-
+    except Exception, e:
+        klogger.exception(e)
 
 if __name__ == "__main__":
     main()

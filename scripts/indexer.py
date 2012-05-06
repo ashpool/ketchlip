@@ -66,7 +66,7 @@ def main():
         # Spawn off crawler and indexer
         gevent.joinall([
             gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue),
-            gevent.spawn_later(10, indexer.gevent_index, input_queue, output_queue)
+            gevent.spawn(indexer.gevent_index, input_queue, output_queue)
         ])
 
         if not indexer.done:
@@ -91,6 +91,8 @@ def main():
         klogger.info("Indexing completed")
     except KeyboardInterrupt:
         klogger.info('^C received, shutting down indexer')
+    except Exception, e:
+        klogger.exception(e)
 
 if __name__ == '__main__':
     main()

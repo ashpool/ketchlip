@@ -22,8 +22,10 @@ class SearchSingleton(object):
     def load(self, index_file, url_lookup_file):
         self.load_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
         self.index_file, self.url_lookup_file = index_file, url_lookup_file
+
         self.index = Persister(self.index_file).load()
         self.url_lookup = Persister(self.url_lookup_file).load()
+
         logger.info("Index length " + str(len(self.index)))
         logger.info("URL lookup length " + str(len(self.url_lookup)))
 

@@ -18,32 +18,38 @@ class Crawler:
     def gevent_crawl(self, input_queue, output_queue):
         greenlets = []
         while not input_queue.empty():
-            if len(greenlets) > 20:
-                klogger.info("Joining crawler greenlets")
+            if len(greenlets) >= 10:
+                logger.info("Joining crawler greenlets")
                 gevent.joinall(greenlets, timeout=30, raise_error=False)
                 greenlets = []
+                gevent.sleep(0)
 
             greenlets.append(gevent.spawn(Crawler().crawl, input_queue, output_queue))
+
 
         # make sure to join all little greenlets before continuing
         gevent.joinall(greenlets, timeout=30, raise_error=True)
 
     def crawl(self, input_queue, output_queue):
-        start = time.time()
-        url = input_queue.get()
+        try:
+            start = time.time()
+            url = input_queue.get_nowait()
 
-        result = {Crawler.URL: url.strip(), Crawler.STATUS: "FAILED"}
+            result = {Crawler.URL: url.strip(), Crawler.STATUS: "FAILED"}
 
-        content, expanded_url = self.get_page(url)
-        if content and expanded_url:
-            result[Crawler.EXPANDED_URL] = expanded_url.strip()
-            result[Crawler.CONTENT] = content.strip()
-            result[Crawler.STATUS] = "OK"
+            content, expanded_url = self.get_page(url)
+            if content and expanded_url:
+                result[Crawler.EXPANDED_URL] = expanded_url.strip()
+                result[Crawler.CONTENT] = content.strip()
+                result[Crawler.STATUS] = "OK"
 
-        if result:
-            output_queue.put(result)
-        elapsed = (time.time() - start)
-        logger.info("Crawled " + url + " in " + "%.2f" % round(elapsed, 2) + " seconds")
+            if result:
+                output_queue.put_nowait(result)
+            elapsed = (time.time() - start)
+            logger.info("Crawled " + url + " in " + "%.2f" % round(elapsed, 2) + " seconds")
+            gevent.sleep(0)
+        except Exception, e:
+            logger.exception(e)
 
     def get_page(self,  url):
         """
