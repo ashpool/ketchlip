@@ -63,6 +63,10 @@ def main():
 
         klogger.info("Including: " + str(include_count) + " Excluding: " + str(exclude_count))
 
+        if include_count <= 0:
+            klogger.info("Nothting to index")
+            return
+
         # Spawn off crawler and indexer
         gevent.joinall([
             gevent.spawn(Crawler().gevent_crawl, input_queue, output_queue),
