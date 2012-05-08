@@ -62,8 +62,7 @@ Would a reverse index ({page: list of word positions}) help?
 
 What to do with common words like "the", "of", "a" etc?
 
-Search options
-The Google operators:
+Search options:
 * OR – Search for either one, such as "price high OR low" searches for "price" with "high" or "low".
 * "-" – Search while excluding a word, such as "apple -tree" searches where word "tree" is not used.
 
