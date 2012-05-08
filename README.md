@@ -68,11 +68,11 @@ The Google operators:
 * "-" – Search while excluding a word, such as "apple -tree" searches where word "tree" is not used.
 
 Some query options:
-site: – Restrict the results to those websites in the given domain,[28] such as, site:www.acmeacme.com. The option "site:com" will search all domain URLs named with ".com" (no space after "site:").
-allintitle: – Only the page titles are searched (not the remaining text on each webpage).
-intitle: – Prefix to search in a webpage title, such as "intitle:google search" will list pages with word "google" in title, and word "search" anywhere (no space after "intitle:").
-allinurl: – Only the page URL address lines are searched (not the text inside each webpage).
-inurl: – Prefix for each word to be found in the URL; others words are matched anywhere, such as "inurl:acme search" matches "acme" in a URL, but matches "search" anywhere (no space after "inurl:").
+* site: – Restrict the results to those websites in the given domain,[28] such as, site:www.acmeacme.com. The option "site:com" will search all domain URLs named with ".com" (no space after "site:").
+* allintitle: – Only the page titles are searched (not the remaining text on each webpage).
+* intitle: – Prefix to search in a webpage title, such as "intitle:google search" will list pages with word "google" in title, and word "search" anywhere (no space after "intitle:").
+* allinurl: – Only the page URL address lines are searched (not the text inside each webpage).
+* inurl: – Prefix for each word to be found in the URL; others words are matched anywhere, such as "inurl:acme search" matches "acme" in a URL, but matches "search" anywhere (no space after "inurl:").
 
 
 ## References
