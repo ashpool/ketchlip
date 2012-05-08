@@ -27,7 +27,7 @@ class Crawler:
             greenlets.append(gevent.spawn(Crawler().crawl, input_queue, output_queue))
 
         # make sure to join all greenlets before continuing
-        gevent.joinall(greenlets, timeout = 30, raise_error=True)
+        gevent.joinall(greenlets, timeout = 30, raise_error=False)
 
     def crawl(self, input_queue, output_queue):
         try:
