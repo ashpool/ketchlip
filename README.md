@@ -1,7 +1,7 @@
 # Ketchlip
 
-Inspired by the Udacity cs101 course I put together Ketchlip to scan Twitter for links in my friends tweets. 
-Ketchlip crawls and indexes links found and makes them searchable through a simple webserver.
+I put together Ketchlip to scan Twitter for links in my friends tweets. Ketchlip crawls and indexes links found and
+makes them searchable through a simple webserver.
 
 
 ## Dependencies
@@ -52,3 +52,5 @@ The .plist files in /osx folder contains daemons for webserver and tweet_scanner
 
 ## References
 * The Anatomy of a Large-Scale Hypertextual Web Search Engine [Sergey Brin, Lawrence Page] http://ilpubs.stanford.edu:8090/361/1/1998-8.pdf
+
+* CS101: Building a Search Engine - Learn key concepts in computer science and build a search engine like google! http://www.udacity.com/overview/Course/cs101/
