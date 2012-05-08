@@ -77,7 +77,7 @@ class TweetScanner():
             logger.error("Max retries reached")
             return
         try:
-            self.scan(api, last_status_processed = last_status_processed)
+            self.scan(api, last_status_processed = last_status_processed, try_count)
         except TweepError, e:
             logger.error(e)
         finally:
