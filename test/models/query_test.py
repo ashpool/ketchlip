@@ -37,6 +37,11 @@ class QueryTest(unittest.TestCase):
         q = ["become", "june", "variation", "aweful"]
         self.assertEqual(['http://b.com'], self.query.multi_lookup(q))
 
+    def test_words_with_several_occurances_per_page(self):
+        index = {"word":[[10, 0], [50, 0], [100, 0], [150, 0], [11, 1], [51, 1], [101, 1], [151, 1]]}
+        url_lookup = {0: 'http://a.com', 1: 'http://b.com'}
+        self.assertEqual(['http://a.com'], Query(index, url_lookup).multi_lookup(["word"]))
+
 
 if __name__ == '__main__':
     unittest.main()
