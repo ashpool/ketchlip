@@ -21,7 +21,7 @@ def test_crawl():
     url = "http://a.com"
 
     input_queue = Mock()
-    input_queue.get_nowait = Mock(return_value=url)
+    input_queue.get = Mock(return_value=url)
     output_queue = Queue()
 
     crawler = Crawler()
