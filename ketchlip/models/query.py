@@ -1,5 +1,19 @@
 #-*- coding: utf-8 -*-
 
+def quicksort(url_list):
+    """
+    [['http://c.com', [10]],
+    ['http://a.com', [200]],
+    ['http://d.com', [10]],
+    ['http://b.com', [11, 22, 42]]]
+    """
+    if not len(url_list):
+        return url_list
+        # ['http://b.com', [11, 22, 42]
+    front = quicksort([le for le in url_list[1:] if max(le[1]) - min(le[1])  <= max(url_list[0][1]) - max(url_list[0][1])])
+    back = quicksort([gt for gt in url_list[1:] if max(gt[1]) - min(gt[1]) > max(url_list[0][1]) - min(url_list[0][1])])
+    return back + [url_list[0]] + front
+
 class Query:
 
     def __init__(self, index, url_lookup):
@@ -7,18 +21,6 @@ class Query:
         self.url_lookup = url_lookup
 
     def multi_lookup(self, query):
-        #[['http://c.com', [10]],
-        # ['http://a.com', [200]],
-        # ['http://d.com', [10]],
-        # ['http://b.com', [11, 22, 42]]]
-        def quicksort(url_list):
-            if not len(url_list):
-                return url_list
-            # ['http://b.com', [11, 22, 42]
-            front = quicksort([le for le in url_list[1:] if max(le[1]) - min(le[1])  <= max(url_list[0][1]) - max(url_list[0][1])])
-            back = quicksort([gt for gt in url_list[1:] if max(gt[1]) - min(gt[1]) > max(url_list[0][1]) - min(url_list[0][1])])
-            return back + [url_list[0]] + front
-
         WORDPOS = 0
         URL = 1
         urls = {}
