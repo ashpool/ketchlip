@@ -30,7 +30,7 @@ will catch up from last status to current in the timeline.
 
 ### Indexing
 
-The script indexer.py reads the tweets.txt produced by tweet_scanner.py and creates and index, graph, and url lookup files.
+The script indexer.py reads the tweets.txt produced by tweet_scanner.py and creates index, graph, and url_lookup files.
 
 > run_indexer
 
