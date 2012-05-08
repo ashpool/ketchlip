@@ -13,6 +13,23 @@ logger = klogger.get_module_logger(__name__)
 # todo ignore all links on a page
 # todo introduce lexicon? {word:word_id}
 
+# todo Error
+"""
+2012-05-08 08:55:38,014 - ketchlip.indexer - INFO - All greenlets done
+2012-05-08 08:55:38,020 - ketchlip.indexer - INFO - len(self.url_lookup)4016
+2012-05-08 08:55:38,021 - ketchlip.indexer - INFO - len(self.lookup_url)4016
+2012-05-08 08:55:38,021 - ketchlip.indexer - INFO - Indexing done
+2012-05-08 08:55:38,021 - ketchlip.crawler - ERROR -
+Traceback (most recent call last):
+  File "ketchlip/crawler.py", line 36, in crawl
+    url = input_queue.get_nowait()
+  File "build/bdist.macosx-10.7-intel/egg/gevent/queue.py", line 204, in get_nowait
+    return self.get(False)
+  File "build/bdist.macosx-10.7-intel/egg/gevent/queue.py", line 196, in get
+    raise Empty
+Empty
+"""
+
 class Indexer:
 
     def __init__(self):
