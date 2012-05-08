@@ -20,20 +20,19 @@ class Crawler:
         while not input_queue.empty():
             if len(greenlets) >= 10:
                 logger.info("Joining crawler greenlets")
-                gevent.joinall(greenlets, timeout=30, raise_error=False)
+                gevent.joinall(greenlets, timeout = 30, raise_error = False)
                 greenlets = []
                 gevent.sleep(0)
 
             greenlets.append(gevent.spawn(Crawler().crawl, input_queue, output_queue))
 
-
-        # make sure to join all little greenlets before continuing
-        gevent.joinall(greenlets, timeout=30, raise_error=True)
+        # make sure to join all greenlets before continuing
+        gevent.joinall(greenlets, timeout = 30, raise_error=True)
 
     def crawl(self, input_queue, output_queue):
         try:
             start = time.time()
-            url = input_queue.get_nowait()
+            url = input_queue.get(timeout = 10)
 
             result = {Crawler.URL: url.strip(), Crawler.STATUS: "FAILED"}
 
